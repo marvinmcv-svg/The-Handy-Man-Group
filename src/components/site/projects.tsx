@@ -3,10 +3,19 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
-import { PROJECTS, SITE } from "@/lib/site-data";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/site/motion-primitives";
+import { SITE } from "@/lib/site-data";
 
-export function Projects() {
+export type ProjectItem = {
+  id: string;
+  title: string;
+  category: string;
+  location: string;
+  description: string;
+  image: string;
+};
+
+export function Projects({ projects }: { projects: ProjectItem[] }) {
   return (
     <section id="projects" className="bg-white py-16 md:py-24">
       <div className="container-drill">
@@ -40,7 +49,7 @@ export function Projects() {
 
         {/* Project grid */}
         <StaggerGroup className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3" stagger={0.12}>
-          {PROJECTS.map((project) => (
+          {projects.map((project) => (
             <StaggerItem key={project.id}>
               <motion.article
                 whileHover={{ y: -6 }}

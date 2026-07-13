@@ -2,10 +2,16 @@
 
 import { motion } from "framer-motion";
 import { Quote, Star } from "lucide-react";
-import { TESTIMONIALS } from "@/lib/site-data";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/site/motion-primitives";
 
-export function Testimonials() {
+export type TestimonialItem = {
+  id: string;
+  name: string;
+  role: string;
+  quote: string;
+};
+
+export function Testimonials({ testimonials }: { testimonials: TestimonialItem[] }) {
   return (
     <section id="reviews" className="bg-[#F3F4F6] py-16 md:py-24">
       <div className="container-drill">
@@ -43,7 +49,7 @@ export function Testimonials() {
 
         {/* Testimonial grid */}
         <StaggerGroup className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3" stagger={0.12}>
-          {TESTIMONIALS.map((t) => (
+          {testimonials.map((t) => (
             <StaggerItem key={t.id}>
               <motion.figure
                 whileHover={{ y: -6 }}

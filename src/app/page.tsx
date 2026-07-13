@@ -11,25 +11,44 @@ import { Testimonials } from "@/components/site/testimonials";
 import { CtaBanner } from "@/components/site/cta-banner";
 import { Faq } from "@/components/site/faq";
 import { ContactForm } from "@/components/site/contact-form";
+import { InstagramFeed } from "@/components/site/instagram-feed";
+import { ScrollProgress } from "@/components/site/scroll-progress";
+import { MarvinChat } from "@/components/site/marvin-chat";
+import { WhatsAppWidget } from "@/components/site/whatsapp-widget";
+import { getServices, getProjects, getTestimonials, getFaqs } from "@/lib/content";
 
-export default function Home() {
+// Revalidate every 60s so admin edits show up
+export const revalidate = 60;
+
+export default async function Home() {
+  const [services, projects, testimonials, faqs] = await Promise.all([
+    getServices(),
+    getProjects(),
+    getTestimonials(),
+    getFaqs(),
+  ]);
+
   return (
     <>
+      <ScrollProgress />
       <SiteHeader />
       <main className="flex-1">
         <Hero />
         <Marquee />
-        <Projects />
+        <Projects projects={projects} />
         <About />
-        <Services />
+        <Services services={services} />
         <WhyUs />
         <Stats />
-        <Testimonials />
+        <Testimonials testimonials={testimonials} />
+        <InstagramFeed />
         <CtaBanner />
-        <Faq />
+        <Faq faqs={faqs} />
         <ContactForm />
       </main>
       <SiteFooter />
+      <MarvinChat />
+      <WhatsAppWidget />
     </>
   );
 }

@@ -3,10 +3,15 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
-import { FAQS } from "@/lib/site-data";
 import { Reveal } from "@/components/site/motion-primitives";
 
-export function Faq() {
+export type FaqItem = {
+  id: string;
+  q: string;
+  a: string;
+};
+
+export function Faq({ faqs }: { faqs: FaqItem[] }) {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
@@ -24,7 +29,7 @@ export function Faq() {
           </h2>
           <p className="mt-5 text-[16px] font-normal leading-[1.6] text-[#333333]">
             Can't find what you're looking for? Give us a call — Joe or Claudia
-            will answer personally.
+            will answer personally. Or chat with Marvin, our AI assistant.
           </p>
           <a
             href="#contact"
@@ -37,10 +42,10 @@ export function Faq() {
         {/* Accordion */}
         <div className="lg:col-span-7">
           <div className="divide-y divide-[#DDDDDD] border-y border-[#DDDDDD]">
-            {FAQS.map((faq, idx) => {
+            {faqs.map((faq, idx) => {
               const isOpen = open === idx;
               return (
-                <div key={faq.q}>
+                <div key={faq.id}>
                   <button
                     type="button"
                     onClick={() => setOpen(isOpen ? null : idx)}

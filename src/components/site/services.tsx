@@ -11,7 +11,6 @@ import {
   ArrowRight,
   type LucideIcon,
 } from "lucide-react";
-import { SERVICES } from "@/lib/site-data";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/site/motion-primitives";
 
 const ICONS: Record<string, LucideIcon> = {
@@ -23,7 +22,15 @@ const ICONS: Record<string, LucideIcon> = {
   Sparkles,
 };
 
-export function Services() {
+export type ServiceItem = {
+  id: string;
+  title: string;
+  blurb: string;
+  icon: string;
+  points: string[];
+};
+
+export function Services({ services }: { services: ServiceItem[] }) {
   return (
     <section id="services" className="bg-white py-16 md:py-24">
       <div className="container-drill">
@@ -44,13 +51,13 @@ export function Services() {
 
         {/* Services grid */}
         <StaggerGroup className="mt-12 grid grid-cols-1 gap-px bg-[#DDDDDD] sm:grid-cols-2 lg:grid-cols-3" stagger={0.1}>
-          {SERVICES.map((service) => {
+          {services.map((service) => {
             const Icon = ICONS[service.icon] ?? Hammer;
             return (
               <StaggerItem key={service.id}>
                 <motion.div
-                  whileHover={{ backgroundColor: "#F3F4F6" }}
-                  transition={{ duration: 0.25 }}
+                  whileHover={{ y: -6 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
                   className="group flex h-full flex-col bg-white p-7 md:p-9"
                 >
                   <motion.div
