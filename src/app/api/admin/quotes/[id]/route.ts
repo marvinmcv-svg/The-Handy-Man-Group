@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
+import { logActivity } from "@/lib/activity";
 
 export const dynamic = "force-dynamic";
 
-const VALID_STATUSES = ["new", "contacted", "completed"];
+const VALID_STATUSES = ["new", "contacted", "quoted", "accepted", "scheduled", "completed", "declined"];
 
 async function ensureAuth() {
   const ok = await isAuthenticated();
@@ -51,16 +52,23 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await req.json().catch(() => null);
-    const { status } = body ?? {};
+    const { status, notes, quoteAmount } = body ?? {};
 
-    if (typeof status !== "string" || !VALID_STATUSES.includes(status)) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: "Invalid status. Must be one of: new, contacted, completed.",
-        },
-        { status: 400 }
-      );
+    const data: Record<string, string | undefined> = {};
+    if (typeof status === "string") {
+      if (!VALID_STATUSES.includes(status)) {
+        return NextResponse.json(
+          { ok: false, error: `Invalid status. Must be one of: ${VALID_STATUSES.join(", ")}.` },
+          { status: 400 }
+        );
+      }
+      data.status = status;
+    }
+    if (typeof notes === "string") {
+      data.notes = notes;
+    }
+    if (typeof quoteAmount === "string" || quoteAmount === null) {
+      data.quoteAmount = quoteAmount ?? null;
     }
 
     const existing = await db.quoteRequest.findUnique({ where: { id } });
@@ -71,10 +79,13 @@ export async function PATCH(
       );
     }
 
-    const updated = await db.quoteRequest.update({
-      where: { id },
-      data: { status },
-    });
+    const updated = await db.quoteRequest.update({ where: { id }, data });
+    if (status && status !== existing.status) {
+      await logActivity("update", "quote", id, `Status changed ${existing.status} → ${status}`);
+    }
+    if (notes !== undefined && notes !== (existing.notes ?? "")) {
+      await logActivity("update", "quote", id, "Updated internal notes");
+    }
     return NextResponse.json({ ok: true, quote: updated });
   } catch (err) {
     console.error("[admin/quotes PATCH] error:", err);
@@ -101,6 +112,7 @@ export async function DELETE(
       );
     }
     await db.quoteRequest.delete({ where: { id } });
+    await logActivity("delete", "quote", id, `Deleted quote from ${existing.name}`);
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[admin/quotes DELETE] error:", err);

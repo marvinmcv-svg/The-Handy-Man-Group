@@ -62,7 +62,7 @@ export function Hero() {
                     transition={{ duration: 0.9, delay: 0.2 + i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                   >
                     {word}
-                    {i < 3 ? "\u00A0" : ""}
+                    {i < 4 ? "\u00A0" : ""}
                   </motion.span>
                 </span>
               ))}

@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { PageHeader, AdminContainer } from "@/components/admin/page-header";
 import { DeleteButton } from "@/components/admin/delete-button";
 import { QuoteStatusBadge, QuoteStatusControl } from "@/components/admin/quote-status-control";
+import { QuoteNotesEditor } from "@/components/admin/quote-notes-editor";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Mail, Phone, MapPin, Clock, Wrench } from "lucide-react";
 
@@ -149,6 +150,13 @@ export default async function QuoteDetailPage({
                 </Button>
               </div>
             </div>
+
+            {/* Quote amount + internal notes */}
+            <QuoteNotesEditor
+              quoteId={quote.id}
+              initialNotes={quote.notes ?? ""}
+              initialAmount={quote.quoteAmount ?? ""}
+            />
           </div>
         </div>
       </AdminContainer>

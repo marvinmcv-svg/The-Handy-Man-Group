@@ -11,16 +11,18 @@ datasource db {
 }
 
 model QuoteRequest {
-  id        String   @id @default(cuid())
-  name      String
-  email     String
-  phone     String
-  service   String
-  message   String
-  suburb    String?
-  status    String   @default("new")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  service     String
+  message     String
+  suburb      String?
+  status      String   @default("new")
+  notes       String?  // internal admin notes
+  quoteAmount String?  // quoted dollar amount (string to avoid float issues)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Service {
@@ -41,6 +43,7 @@ model Project {
   location    String
   description String
   image       String
+  video       String?  // optional video URL for project
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -70,4 +73,32 @@ model AdminSession {
   token     String   @unique
   createdAt DateTime @default(now())
   expiresAt DateTime
+}
+
+model Media {
+  id            String   @id @default(cuid())
+  filename      String   // stored filename on disk
+  originalName  String   // original upload name
+  mimeType      String
+  size          Int      // bytes
+  url           String   // /uploads/xxx.jpg
+  type          String   // "image" | "video"
+  width         Int?
+  height        Int?
+  createdAt     DateTime @default(now())
+}
+
+model Setting {
+  key       String   @id
+  value     String   // JSON-encoded value
+  updatedAt DateTime @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String   // e.g. "create", "update", "delete", "login"
+  entity    String   // e.g. "service", "project", "quote", "media"
+  entityId  String?
+  detail    String?
+  createdAt DateTime @default(now())
 }

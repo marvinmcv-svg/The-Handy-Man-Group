@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils";
 const STATUSES = [
   { value: "new", label: "New", className: "bg-[#D2151E] text-white" },
   { value: "contacted", label: "Contacted", className: "bg-[#121117] text-white" },
-  {
-    value: "completed",
-    label: "Completed",
-    className: "bg-[#F3F4F6] text-[#121117] border border-[#DDDDDD]",
-  },
+  { value: "quoted", label: "Quoted", className: "bg-[#7C2D12] text-white" },
+  { value: "accepted", label: "Accepted", className: "bg-[#15803D] text-white" },
+  { value: "scheduled", label: "Scheduled", className: "bg-[#1E40AF] text-white" },
+  { value: "completed", label: "Completed", className: "bg-[#F3F4F6] text-[#121117] border border-[#DDDDDD]" },
+  { value: "declined", label: "Declined", className: "bg-[#999999] text-white" },
 ] as const;
 
 export function QuoteStatusControl({

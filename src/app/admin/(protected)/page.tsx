@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { PageHeader, AdminContainer } from "@/components/admin/page-header";
+import { ServiceBarChart, StatusPieChart } from "@/components/admin/dashboard-charts";
 import {
   Wrench,
   FolderKanban,
@@ -9,6 +10,8 @@ import {
   Inbox,
   Mail,
   ArrowRight,
+  TrendingUp,
+  DollarSign,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +19,11 @@ export const dynamic = "force-dynamic";
 const STATUS_STYLES: Record<string, string> = {
   new: "bg-[#D2151E] text-white",
   contacted: "bg-[#121117] text-white",
+  quoted: "bg-[#7C2D12] text-white",
+  accepted: "bg-[#15803D] text-white",
+  scheduled: "bg-[#1E40AF] text-white",
   completed: "bg-[#F3F4F6] text-[#121117] border border-[#DDDDDD]",
+  declined: "bg-[#999999] text-white",
 };
 
 function formatDate(iso: Date) {
@@ -36,6 +43,7 @@ export default async function AdminDashboardPage() {
     totalQuotes,
     newQuotes,
     recentQuotes,
+    allQuotes,
   ] = await Promise.all([
     db.service.count(),
     db.project.count(),
@@ -47,7 +55,40 @@ export default async function AdminDashboardPage() {
       orderBy: { createdAt: "desc" },
       take: 5,
     }),
+    db.quoteRequest.findMany({ select: { service: true, status: true, quoteAmount: true } }),
   ]);
+
+  // Analytics: jobs by service
+  const serviceCounts: Record<string, number> = {};
+  for (const q of allQuotes) {
+    serviceCounts[q.service] = (serviceCounts[q.service] ?? 0) + 1;
+  }
+  const serviceData = Object.entries(serviceCounts)
+    .map(([name, count]) => ({
+      name: name.length > 14 ? name.slice(0, 12) + "…" : name,
+      count,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8);
+
+  // Analytics: quotes by status
+  const statusCounts: Record<string, number> = {};
+  for (const q of allQuotes) {
+    statusCounts[q.status] = (statusCounts[q.status] ?? 0) + 1;
+  }
+  const statusData = Object.entries(statusCounts).map(([status, count]) => ({ status, count }));
+
+  // Conversion: (accepted + completed) / total
+  const won = (statusCounts["accepted"] ?? 0) + (statusCounts["completed"] ?? 0);
+  const conversionRate = totalQuotes > 0 ? Math.round((won / totalQuotes) * 100) : 0;
+
+  // Pipeline value: sum of quoteAmount for accepted/scheduled/completed
+  const pipelineValue = allQuotes
+    .filter((q) => ["accepted", "scheduled", "completed"].includes(q.status))
+    .reduce((sum, q) => {
+      const n = parseFloat(q.quoteAmount ?? "0");
+      return sum + (isNaN(n) ? 0 : n);
+    }, 0);
 
   const stats = [
     {
@@ -130,6 +171,65 @@ export default async function AdminDashboardPage() {
               </Link>
             );
           })}
+        </div>
+
+        {/* Analytics row */}
+        <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {/* Conversion + pipeline */}
+          <div className="border border-[#DDDDDD] bg-[#121117] p-6 text-white">
+            <div className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wide text-white/50">
+              <TrendingUp className="h-4 w-4 text-[#D2151E]" />
+              Conversion
+            </div>
+            <div className="mt-4 text-[56px] font-bold leading-none text-[#D2151E]">
+              {conversionRate}%
+            </div>
+            <p className="mt-2 text-[13px] text-white/60">
+              {won} won / {totalQuotes} total quotes
+            </p>
+            <div className="mt-6 border-t border-white/10 pt-5">
+              <div className="flex items-center gap-2 text-[13px] font-semibold uppercase tracking-wide text-white/50">
+                <DollarSign className="h-4 w-4 text-[#D2151E]" />
+                Pipeline value
+              </div>
+              <div className="mt-3 text-[32px] font-bold leading-none">
+                ${pipelineValue.toLocaleString("en-AU")}
+              </div>
+              <p className="mt-2 text-[13px] text-white/60">
+                Accepted + scheduled + completed
+              </p>
+            </div>
+          </div>
+
+          {/* Jobs by service */}
+          <div className="border border-[#DDDDDD] bg-white p-6 lg:col-span-2">
+            <h2 className="text-[15px] font-bold text-[#121117]">Quotes by service</h2>
+            <p className="mt-1 text-[12px] text-[#999999]">Which services are most in demand</p>
+            {serviceData.length === 0 ? (
+              <div className="flex h-[200px] items-center justify-center text-[13px] text-[#999999]">
+                No quote data yet
+              </div>
+            ) : (
+              <div className="mt-4">
+                <ServiceBarChart data={serviceData} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quotes by status */}
+        <div className="mt-4 border border-[#DDDDDD] bg-white p-6">
+          <h2 className="text-[15px] font-bold text-[#121117]">Quotes by status</h2>
+          <p className="mt-1 text-[12px] text-[#999999]">Pipeline overview</p>
+          {statusData.length === 0 ? (
+            <div className="flex h-[200px] items-center justify-center text-[13px] text-[#999999]">
+              No quote data yet
+            </div>
+          ) : (
+            <div className="mt-4">
+              <StatusPieChart data={statusData} />
+            </div>
+          )}
         </div>
 
         {/* Recent quote requests */}

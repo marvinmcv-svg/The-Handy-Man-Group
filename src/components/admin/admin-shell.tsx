@@ -15,6 +15,9 @@ import {
   Menu,
   X,
   Loader2,
+  ImagePlus,
+  Settings,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,9 +25,12 @@ const NAV = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/services", label: "Services", icon: Wrench },
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
+  { href: "/admin/media", label: "Media Library", icon: ImagePlus },
   { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
   { href: "/admin/faqs", label: "FAQs", icon: HelpCircle },
   { href: "/admin/quotes", label: "Quote Requests", icon: Inbox },
+  { href: "/admin/settings", label: "Site Settings", icon: Settings },
+  { href: "/admin/activity", label: "Activity Log", icon: History },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {

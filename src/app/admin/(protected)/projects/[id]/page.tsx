@@ -44,6 +44,7 @@ export default async function EditProjectPage({
               location: project.location,
               description: project.description,
               image: project.image,
+              video: project.video,
               order: project.order,
             }}
           />

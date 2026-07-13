@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { isAuthenticated } from "@/lib/auth";
+import { logActivity } from "@/lib/activity";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,15 @@ export async function POST(req: NextRequest) {
   if (unauth) return unauth;
   try {
     const body = await req.json().catch(() => null);
-    const { title, category, location, description, image, order } = body ?? {};
+    const {
+      title,
+      category,
+      location,
+      description,
+      image,
+      video,
+      order,
+    } = body ?? {};
 
     if (typeof title !== "string" || !title.trim()) {
       return NextResponse.json(
@@ -63,9 +72,19 @@ export async function POST(req: NextRequest) {
         location: typeof location === "string" ? location.trim() : "",
         description: description.trim(),
         image: typeof image === "string" ? image.trim() : "",
+        video:
+          typeof video === "string" && video.trim() ? video.trim() : null,
         order: Number.isFinite(order) ? Number(order) : 0,
       },
     });
+
+    await logActivity(
+      "create",
+      "project",
+      created.id,
+      `Created project "${created.title}"`
+    );
+
     return NextResponse.json({ ok: true, project: created });
   } catch (err) {
     console.error("[admin/projects POST] error:", err);

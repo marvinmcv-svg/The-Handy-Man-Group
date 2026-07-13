@@ -4,12 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Film, ImageIcon, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SubmitButton, useFormSubmit } from "@/components/admin/submit-button";
+import { MediaPicker } from "@/components/admin/media-picker";
+import { cn } from "@/lib/utils";
 
 type Initial = {
   id?: string;
@@ -18,8 +20,11 @@ type Initial = {
   location?: string;
   description?: string;
   image?: string;
+  video?: string | null;
   order?: number;
 };
+
+type ImageMode = "picker" | "url";
 
 export function ProjectForm({ initial }: { initial?: Initial }) {
   const router = useRouter();
@@ -31,7 +36,15 @@ export function ProjectForm({ initial }: { initial?: Initial }) {
   const [location, setLocation] = useState(initial?.location ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
   const [image, setImage] = useState(initial?.image ?? "");
+  const [video, setVideo] = useState(initial?.video ?? "");
   const [order, setOrder] = useState(String(initial?.order ?? 0));
+
+  // If the initial image came from /uploads/ assume picker mode is preferred.
+  const initialImageMode: ImageMode =
+    initial?.image && !initial.image.startsWith("/uploads/")
+      ? "url"
+      : "picker";
+  const [imageMode, setImageMode] = useState<ImageMode>(initialImageMode);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -41,6 +54,7 @@ export function ProjectForm({ initial }: { initial?: Initial }) {
       location,
       description,
       image,
+      video: video || "",
       order: Number(order) || 0,
     };
 
@@ -131,28 +145,133 @@ export function ProjectForm({ initial }: { initial?: Initial }) {
           />
         </div>
 
+        {/* Image — picker or URL toggle */}
         <div className="space-y-2">
-          <Label htmlFor="image">Image URL</Label>
-          <Input
-            id="image"
-            type="url"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-            placeholder="https://…"
-          />
-          <p className="text-xs text-[#999999]">
-            Paste a direct image URL. A preview appears below.
-          </p>
-          {image && (
-            <img
-              src={image}
-              alt="Preview"
-              className="h-40 w-full border border-[#DDDDDD] object-cover"
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).style.opacity = "0.3";
-              }}
-            />
+          <div className="flex items-center justify-between">
+            <Label htmlFor="image">Image</Label>
+            <div className="inline-flex border border-[#DDDDDD]">
+              <button
+                type="button"
+                onClick={() => setImageMode("picker")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold transition-colors",
+                  imageMode === "picker"
+                    ? "bg-[#121117] text-white"
+                    : "bg-white text-[#666666] hover:text-[#121117]"
+                )}
+              >
+                <ImageIcon className="h-3 w-3" />
+                Upload / Choose
+              </button>
+              <button
+                type="button"
+                onClick={() => setImageMode("url")}
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold transition-colors",
+                  imageMode === "url"
+                    ? "bg-[#121117] text-white"
+                    : "bg-white text-[#666666] hover:text-[#121117]"
+                )}
+              >
+                <LinkIcon className="h-3 w-3" />
+                Paste URL
+              </button>
+            </div>
+          </div>
+
+          {imageMode === "picker" ? (
+            <div className="space-y-3 border border-[#DDDDDD] bg-[#F9FAFB] p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <MediaPicker
+                  filterType="image"
+                  value={image}
+                  onSelect={(m) => setImage(m.url)}
+                  onClear={() => setImage("")}
+                />
+                {image && (
+                  <span className="text-xs text-[#666666]">
+                    Selected:{" "}
+                    <span className="font-medium text-[#121117]">
+                      {image.split("/").pop()}
+                    </span>
+                  </span>
+                )}
+              </div>
+              {image ? (
+                 
+                <img
+                  src={image}
+                  alt="Image preview"
+                  className="h-40 w-full border border-[#DDDDDD] bg-white object-cover"
+                />
+              ) : (
+                <div className="flex h-40 w-full items-center justify-center border border-dashed border-[#DDDDDD] bg-white text-xs text-[#999999]">
+                  No image selected
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <Input
+                id="image"
+                type="url"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+                placeholder="https://…"
+              />
+              <p className="text-xs text-[#999999]">
+                Paste a direct image URL. A preview appears below.
+              </p>
+              {image && (
+                 
+                <img
+                  src={image}
+                  alt="Preview"
+                  className="h-40 w-full border border-[#DDDDDD] object-cover"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.opacity = "0.3";
+                  }}
+                />
+              )}
+            </>
           )}
+        </div>
+
+        {/* Video — optional */}
+        <div className="space-y-2">
+          <Label htmlFor="video">
+            Video <span className="text-[10px] font-normal text-[#999999]">(optional)</span>
+          </Label>
+          <div className="space-y-3 border border-[#DDDDDD] bg-[#F9FAFB] p-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <MediaPicker
+                filterType="video"
+                value={video}
+                label="Choose a video"
+                onSelect={(m) => setVideo(m.url)}
+                onClear={() => setVideo("")}
+              />
+              <Input
+                type="url"
+                value={video}
+                onChange={(e) => setVideo(e.target.value)}
+                placeholder="…or paste a video URL"
+                className="flex-1"
+              />
+            </div>
+            {video ? (
+              <video
+                src={video}
+                controls
+                className="h-40 w-full border border-[#DDDDDD] bg-white object-cover"
+              />
+            ) : (
+              <div className="flex h-32 w-full items-center justify-center gap-2 border border-dashed border-[#DDDDDD] bg-white text-xs text-[#999999]">
+                <Film className="h-4 w-4" />
+                No video selected
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
@@ -165,9 +284,7 @@ export function ProjectForm({ initial }: { initial?: Initial }) {
               onChange={(e) => setOrder(e.target.value)}
               placeholder="0"
             />
-            <p className="text-xs text-[#999999]">
-              Lower numbers appear first.
-            </p>
+            <p className="text-xs text-[#999999]">Lower numbers appear first.</p>
           </div>
         </div>
       </div>
