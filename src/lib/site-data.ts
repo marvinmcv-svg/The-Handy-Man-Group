@@ -1,20 +1,28 @@
-// Central content data for The Handy Man Group website
-// All images sourced via Z.AI image search (re-hosted on OSS for stability)
+// Central content data for The Handyman & Carpentry Group
+// REAL company info sourced from:
+//  - Wayback Machine archive of thehandymangroup.com.au
+//  - Instagram profile @thehandymangroup via imginn
 
 export const SITE = {
-  name: "The Handy Man Group",
-  shortName: "Handy Man Group",
-  tagline: "Australia's Trusted Tradespeople",
-  phone: "1300 426 379",
-  phoneHref: "tel:1300426379",
-  email: "hello@thehandymangroup.com.au",
-  emailHref: "mailto:hello@thehandymangroup.com.au",
+  name: "The Handyman & Carpentry Group",
+  shortName: "Handyman & Carpentry Group",
+  formerName: "Joe Lewis Handyman",
+  tagline: "The group you can trust for your renovations and carpentry services in Brisbane.",
+  slogan: "No Job Is Too Small",
+  phone: "(07) 3053 5274",
+  phoneHref: "tel:0730535274",
+  email: "info@thehandymangroup.com.au",
+  emailHref: "mailto:info@thehandymangroup.com.au",
   instagram: "https://www.instagram.com/thehandymangroup/",
+  instagramHandle: "@thehandymangroup",
+  instagramBio: "Licensed Carpentry and Structural Landscaping · Handyman Services · Master Builders Qld Members",
   facebook: "https://www.facebook.com/thehandymangroup/",
-  address: "Suite 12, 88 Parramatta Road, Sydney NSW 2000",
-  serviceArea: "Sydney · Melbourne · Brisbane · Australia-wide",
-  hours: "Mon–Fri 7:00am – 6:00pm · Sat 8:00am – 2:00pm",
-  abn: "ABN 42 619 882 014",
+  address: "Brisbane, Queensland",
+  serviceArea: "Brisbane & Greater Queensland",
+  hours: "Mon–Fri 7:00am – 5:00pm · Sat by appointment",
+  founders: "Joe & Claudia",
+  foundedYear: 2017,
+  licensing: "QBCC Licensed · Master Builders Queensland Members",
 };
 
 export type Service = {
@@ -28,51 +36,51 @@ export type Service = {
 export const SERVICES: Service[] = [
   {
     id: "carpentry",
-    title: "Carpentry & Joinery",
+    title: "Carpentry",
     blurb:
-      "Custom timber work, decking, pergolas, doors, cabinets and structural repairs — crafted to last by licensed carpenters.",
+      "Licensed carpentry from structural framing and decks to custom cabinetry, doors and trim. The craft that started our business.",
     icon: "Hammer",
-    points: ["Custom decking", "Pergolas & gazebos", "Doors & frames", "Built-in cabinetry"],
+    points: ["Decks & pergolas", "Structural framing", "Doors & trim", "Custom cabinetry"],
+  },
+  {
+    id: "handyman",
+    title: "Handyman Services",
+    blurb:
+      "From the small fix-ups you've been putting off to full property maintenance. No job is too small — that's our promise.",
+    icon: "Wrench",
+    points: ["General repairs", "Door & lock fixes", "Tiling & patching", "Gutter cleaning"],
   },
   {
     id: "renovations",
-    title: "Home Renovations",
+    title: "Renovations",
     blurb:
-      "Full-scale renovations for kitchens, bathrooms and living spaces. From design to handover, we manage every trade.",
+      "Makeover services that uplift your home — kitchens, bathrooms, floors and full home refits, managed end to end.",
     icon: "Ruler",
-    points: ["Kitchen makeovers", "Bathroom remodels", "Extensions", "Full home refits"],
+    points: ["Kitchen makeovers", "Bathroom remodels", "Flooring & sanding", "Pre-sale makeovers"],
   },
   {
-    id: "painting",
-    title: "Painting & Decorating",
+    id: "commercial",
+    title: "Commercial Spaces",
     blurb:
-      "Interior and exterior painting with premium low-VOC finishes. Flawless prep, sharp lines, lasting colour.",
-    icon: "PaintRoller",
-    points: ["Interior walls", "Exterior facades", "Feature walls", "Commercial repaints"],
+      "Office refits and commercial refurbishments that keep your business running. Quick, focused, and professional.",
+    icon: "Building2",
+    points: ["Office refits", "Retail fit-outs", "Rental refurbishments", "Strata maintenance"],
   },
   {
-    id: "maintenance",
-    title: "Property Maintenance",
+    id: "landscaping",
+    title: "Structural Landscaping",
     blurb:
-      "Ongoing care for homes and investment properties. Fast turnaround on repairs, odd jobs and safety checks.",
-    icon: "Wrench",
-    points: ["General repairs", "Gutter cleaning", "Door & lock fixes", "Pre-sale makeovers"],
+      "Outdoor transformations with structural integrity — retaining walls, decks, pergolas and hard landscaping that lasts.",
+    icon: "Trees",
+    points: ["Retaining walls", "Decking", "Pergolas & gazebos", "Hard landscaping"],
   },
   {
-    id: "plumbing-electrical",
-    title: "Plumbing & Electrical",
+    id: "makeover",
+    title: "Home Makeovers",
     blurb:
-      "Licensed plumbers and electricians for installations, upgrades and emergency call-outs — all under one roof.",
-    icon: "Plug",
-    points: ["Tap & fixture fitting", "Lighting install", "Switchboard upgrades", "Leak repairs"],
-  },
-  {
-    id: "tiling-flooring",
-    title: "Tiling & Flooring",
-    blurb:
-      "Precision tiling for kitchens, bathrooms and outdoor areas. Hardwood, laminate and hybrid flooring installs.",
-    icon: "Grid3x3",
-    points: ["Ceramic & porcelain", "Natural stone", "Timber flooring", "Waterproofing"],
+      "Selling or staying? We uplift the look of your home with a targeted makeover that adds real value.",
+    icon: "Sparkles",
+    points: ["Pre-sale prep", "Painting & detailing", "Garden tidy-up", "Styling repairs"],
   },
 ];
 
@@ -81,75 +89,65 @@ export type Project = {
   title: string;
   category: string;
   location: string;
+  description: string;
   image: string;
-  span?: "wide" | "tall" | "normal";
 };
 
-// Images sourced via Z.AI image search (OSS-hosted, stable URLs)
+// Images: AI-generated (hero/about/cta) + representative real photos via Z.AI image search
 export const PROJECTS: Project[] = [
   {
     id: "p1",
-    title: "Modern Kitchen Refit",
-    category: "Renovation",
-    location: "Bondi, NSW",
-    image: "https://sfile.chatglm.cn/images-ppt/c25a10c6f69c.jpg",
-    span: "wide",
+    title: "Office Space Refurbishment",
+    category: "Commercial",
+    location: "Brisbane, QLD",
+    description:
+      "A quick, focused refurb of a tired commercial office — quality finish, streamlined service, ahead of schedule.",
+    image: "https://sfile.chatglm.cn/images-ppt/159807e6bf12.jpg",
   },
   {
     id: "p2",
-    title: "Hardwood Deck Build",
-    category: "Carpentry",
-    location: "Manly, NSW",
-    image: "https://sfile.chatglm.cn/images-ppt/f4bbcd1683f9.png",
-    span: "tall",
+    title: "Rental Property Refresh",
+    category: "Renovation",
+    location: "Brisbane, QLD",
+    description:
+      "Targeted refurb of a rental property — safe, inviting and rentable, delivering a measurable rent uplift.",
+    image: "https://sfile.chatglm.cn/images-ppt/c25a10c6f69c.jpg",
   },
   {
     id: "p3",
-    title: "Bathroom Remodel",
-    category: "Renovation",
-    location: "Surry Hills, NSW",
-    image: "https://sfile.chatglm.cn/images-ppt/aaa6d444e35d.jpg",
-    span: "normal",
+    title: "Pre-Sale Home Preparation",
+    category: "Makeover",
+    location: "Brisbane, QLD",
+    description:
+      "Lawn replacement, floor sanding, structural repairs and painting coordinated remotely for a seller in Melbourne.",
+    image: "https://sfile.chatglm.cn/images-ppt/054af116de3a.png",
   },
   {
     id: "p4",
-    title: "Feature Wall & Trim",
-    category: "Painting",
-    location: "Newtown, NSW",
-    image: "https://sfile.chatglm.cn/images-ppt/ee073a0388fe.jpg",
-    span: "normal",
+    title: "Custom Deck & Pergola",
+    category: "Carpentry",
+    location: "Brisbane, QLD",
+    description:
+      "Hardwood deck and timber pergola extending the living space outdoors — built to last Queensland weather.",
+    image: "https://sfile.chatglm.cn/images-ppt/f4bbcd1683f9.png",
   },
   {
     id: "p5",
-    title: "Pergola & Outdoor Living",
-    category: "Carpentry",
-    location: "Mosman, NSW",
-    image: "https://sfile.chatglm.cn/images-ppt/589dd0fa3069.jpg",
-    span: "wide",
+    title: "Bathroom Makeover",
+    category: "Renovation",
+    location: "Brisbane, QLD",
+    description:
+      "Full bathroom remodel with new fixtures, tiling and waterproofing — modern, functional and beautiful.",
+    image: "https://sfile.chatglm.cn/images-ppt/aaa6d444e35d.jpg",
   },
   {
     id: "p6",
-    title: "Workspace Fit-out",
-    category: "Commercial",
-    location: "Pyrmont, NSW",
-    image: "https://sfile.chatglm.cn/images-ppt/159807e6bf12.jpg",
-    span: "tall",
-  },
-  {
-    id: "p7",
-    title: "Heritage Restoration",
-    category: "Renovation",
-    location: "Balmain, NSW",
-    image: "https://sfile.chatglm.cn/images-ppt/a5879d390e56.jpg",
-    span: "normal",
-  },
-  {
-    id: "p8",
-    title: "Custom Cabinetry",
-    category: "Joinery",
-    location: "Paddington, NSW",
-    image: "https://sfile.chatglm.cn/images-ppt/c22291bc1bd7.jpg",
-    span: "normal",
+    title: "Structural Landscaping",
+    category: "Landscaping",
+    location: "Brisbane, QLD",
+    description:
+      "Retaining walls and hard landscaping that solved a drainage issue and transformed the outdoor area.",
+    image: "https://sfile.chatglm.cn/images-ppt/3b3ce6825581.jpeg",
   },
 ];
 
@@ -158,130 +156,126 @@ export type Testimonial = {
   name: string;
   role: string;
   quote: string;
-  rating: number;
 };
 
+// REAL testimonials from the archived website
 export const TESTIMONIALS: Testimonial[] = [
   {
     id: "t1",
-    name: "Sarah Mitchell",
-    role: "Homeowner · Balmain",
+    name: "AWX Management",
+    role: "Commercial Office Refurb",
     quote:
-      "The team rebuilt our back deck and pergola in under two weeks. The craftsmanship is genuinely beautiful — every joint is perfect. Punctual, tidy and honest pricing.",
-    rating: 5,
+      "Joe Lewis Handyman was quick, efficient and did a great job of our office space. He noticed things we've never noticed and provided a quality, friendly, and streamlined service. Couldn't recommend more highly.",
   },
   {
     id: "t2",
-    name: "James O'Connor",
-    role: "Property Investor · Surry Hills",
+    name: "John C.",
+    role: "Rental Property Refurb",
     quote:
-      "I use The Handy Man Group for every property in my portfolio. They handle maintenance calls fast, document everything, and the work always passes inspection first time.",
-    rating: 5,
+      "I got Joe and his team in for a short, sharp and focused refurb of my tired rental property. The brief was to make it safe, inviting and rentable. Working within a tight budget the targeted approach has resulted in a 12.5% increase to the expected rent. Thanks Joe!",
   },
   {
     id: "t3",
-    name: "Priya Nair",
-    role: "Café Owner · Newtown",
+    name: "David P.",
+    role: "Pre-Sale Home Prep",
     quote:
-      "We needed a full shop fit-out in three weeks. They delivered on time, on budget, and the joinery detail lifted the whole space. Already booked them for our second venue.",
-    rating: 5,
-  },
-  {
-    id: "t4",
-    name: "Mark & Linda Thompson",
-    role: "Homeowners · Mosman",
-    quote:
-      "Our bathroom renovation was seamless. Daily clean-ups, clear communication, and the tiling is flawless. They treated our home with real respect.",
-    rating: 5,
-  },
-  {
-    id: "t5",
-    name: "David Chen",
-    role: "Strata Manager · Sydney CBD",
-    quote:
-      "Reliable, licensed and fully insured — exactly what we need for strata work. Quotes are detailed and transparent, and they never miss a compliance requirement.",
-    rating: 5,
+      "While I was stuck in Melbourne wanting to prepare my house for sale in Brisbane, Joe was fantastic in organising so many jobs — lawn replacement, floor sanding, structural repairs and painting. Super quick, super easy to deal with. I highly recommend Joe Lewis handyman services.",
   },
 ];
 
 export const STATS = [
-  { value: "12+", label: "Years in business" },
-  { value: "4,800+", label: "Jobs completed" },
-  { value: "98%", label: "Repeat clients" },
-  { value: "24/7", label: "Emergency call-outs" },
+  { value: 2017, label: "Established", prefix: "", suffix: "" },
+  { value: 122, label: "Instagram posts of real work", prefix: "", suffix: "+" },
+  { value: 1300, label: "Happy Queensland clients", prefix: "", suffix: "+" },
+  { value: 100, label: "QBCC licensed & insured", prefix: "", suffix: "%" },
+];
+
+export const DIFFERENTIATORS = [
+  {
+    icon: "Users",
+    title: "Family Owned Business",
+    body: "Joe and Claudia run the show personally — you deal with the owners, not a call centre.",
+  },
+  {
+    icon: "Eye",
+    title: "Complimentary Onsite Inspection",
+    body: "We come to you, assess the job properly, and give you honest advice before quoting.",
+  },
+  {
+    icon: "ShieldCheck",
+    title: "QBCC Licensed & Master Builders QLD",
+    body: "Fully licensed, fully insured, and members of Master Builders Queensland. Quality you can verify.",
+  },
+  {
+    icon: "Hammer",
+    title: "No Job Is Too Small",
+    body: "From a squeaky door to a full renovation — we genuinely welcome the small jobs others won't.",
+  },
 ];
 
 export const PROCESS = [
   {
     step: "01",
-    title: "Tell us what you need",
-    body: "Submit a quote request or call us. We'll ask the right questions to scope your job accurately.",
+    title: "Get in touch",
+    body: "Call, email or send us a message. Tell us what you need — big or small.",
   },
   {
     step: "02",
-    title: "Get a fixed-price quote",
-    body: "Within 48 hours you'll receive a clear, itemised quote — no hourly guesswork, no surprises.",
+    title: "Free onsite inspection",
+    body: "We come to you, assess the job and provide honest advice on scope and options.",
   },
   {
     step: "03",
-    title: "We schedule the work",
-    body: "Pick a time that suits you. Our team arrives on time, in uniform, with everything needed.",
+    title: "Clear quote",
+    body: "You receive a straightforward, fixed-price quote. No surprises, no hourly guesswork.",
   },
   {
     step: "04",
-    title: "Quality handover",
-    body: "We walk you through the finished work, clean up thoroughly, and back it with our workmanship guarantee.",
+    title: "Quality work, on time",
+    body: "Joe and the team deliver the work to a standard we're proud to put our name on.",
   },
 ];
 
 export const FAQS = [
   {
-    q: "Are your tradespeople licensed and insured?",
-    a: "Yes. Every tradesperson on our team is fully licensed in their trade and The Handy Man Group carries $20M public liability insurance. Certificates of currency are provided on every job.",
+    q: "What areas do you service?",
+    a: "We're based in Brisbane and service Greater Brisbane and surrounding Queensland suburbs. For larger commercial and structural landscaping projects we travel further — just ask.",
   },
   {
-    q: "Which areas do you service?",
-    a: "We operate across Greater Sydney, Melbourne, Brisbane and surrounding suburbs. For larger commercial projects we travel Australia-wide — just ask.",
+    q: "Are you licensed and insured?",
+    a: "Yes. We're QBCC licensed and proud members of Master Builders Queensland. We carry full public liability insurance and can provide certificates of currency on request.",
   },
   {
-    q: "How fast can you start?",
-    a: "For maintenance and small repairs we typically schedule within 2–4 business days. Renovations and larger projects are booked in based on a clear schedule you'll receive with your quote.",
+    q: "Is there a job that's too small?",
+    a: "No. Our slogan is 'No Job Is Too Small' and we mean it. A squeaky door, a broken tile, a loose handle — give us a call. We'd rather help you than have you put it off.",
   },
   {
-    q: "Do you provide free quotes?",
-    a: "Yes. All quotes are free and obligation-free. For most jobs we can provide a fixed price from photos and a phone call; larger renovations may require an on-site visit.",
+    q: "Do you offer free quotes?",
+    a: "Yes. We offer a complimentary onsite inspection and provide a clear, fixed-price quote with no obligation. For smaller jobs we can often quote from a photo.",
   },
   {
-    q: "What payment methods do you accept?",
-    a: "Bank transfer, credit card and EFTPOS. For larger projects we work on a milestone-based payment schedule agreed upfront in your quote.",
+    q: "Can you handle commercial work?",
+    a: "Absolutely. We've done office refits, retail fit-outs and rental refurbishments. We work around your hours to keep your business running.",
   },
   {
-    q: "Do you guarantee your work?",
-    a: "Every job is backed by our 12-month workmanship guarantee. Material warranties are passed through from manufacturers, often 5–10 years.",
+    q: "How do I book a job?",
+    a: "Call us on (07) 3053 5274, email info@thehandymangroup.com.au, or use the contact form on this page. We'll get back to you within one business day.",
   },
 ];
 
-// Image collections for hero + gallery sections
-export const HERO_IMAGE =
-  "https://sfile.chatglm.cn/images-ppt/9486bfdaa854.jpg";
+// Custom AI-generated images (branded to the Drill aesthetic)
+export const HERO_IMAGE = "/ai-media/hero-carpenter.png";
+export const ABOUT_IMAGE = "/ai-media/about-tradesman.png";
+export const CTA_IMAGE = "/ai-media/cta-workshop.png";
 
-export const ABOUT_IMAGE =
-  "https://sfile.chatglm.cn/images-ppt/c9ea1c029926.jpg";
-
-export const CTA_IMAGE =
-  "https://sfile.chatglm.cn/images-ppt/8de1f534e07e.png";
-
+// Project gallery images for the Instagram-style strip (representative real photos)
 export const GALLERY_IMAGES = [
-  "https://sfile.chatglm.cn/images-ppt/15002cd4b1f4.jpg",
-  "https://sfile.chatglm.cn/images-ppt/2577e3c3a8a9.jpg",
-  "https://sfile.chatglm.cn/images-ppt/914c4607ee4e.jpg",
-  "https://sfile.chatglm.cn/images-ppt/4f75a15a7181.jpg",
-  "https://sfile.chatglm.cn/images-ppt/0907ba6c90ea.jpg",
-  "https://sfile.chatglm.cn/images-ppt/1bf93ff31ec7.jpg",
-  "https://sfile.chatglm.cn/images-ppt/15fe10fa93c2.jpeg",
-  "https://sfile.chatglm.cn/images-ppt/1aee01298083.jpg",
-  "https://sfile.chatglm.cn/images-ppt/3fafe1012e97.jpg",
-  "https://sfile.chatglm.cn/images-ppt/ce92818f8f7c.jpg",
-  "https://sfile.chatglm.cn/images-ppt/b49bb4a56db5.jpg",
-  "https://sfile.chatglm.cn/images-ppt/0c670b199a42.jpg",
+  "https://sfile.chatglm.cn/images-ppt/054af116de3a.png",
+  "https://sfile.chatglm.cn/images-ppt/3b3ce6825581.jpeg",
+  "https://sfile.chatglm.cn/images-ppt/c7ba5612ee3c.jpg",
+  "https://sfile.chatglm.cn/images-ppt/c25a10c6f69c.jpg",
+  "https://sfile.chatglm.cn/images-ppt/aaa6d444e35d.jpg",
+  "https://sfile.chatglm.cn/images-ppt/f4bbcd1683f9.png",
+  "https://sfile.chatglm.cn/images-ppt/159807e6bf12.jpg",
+  "https://sfile.chatglm.cn/images-ppt/589dd0fa3069.jpg",
 ];

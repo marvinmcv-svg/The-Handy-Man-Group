@@ -11,33 +11,34 @@ const publicSans = Public_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "The Handy Man Group | Trusted Handyman Services in Australia",
+  title: "The Handyman & Carpentry Group | Brisbane Carpenters & Handymen",
   description:
-    "The Handy Man Group delivers premium carpentry, renovations, painting and property maintenance across Australia. Reliable, licensed and insured tradespeople for your home and business.",
+    "Brisbane's trusted family-owned team for licensed carpentry, handyman services, renovations, commercial fit-outs and structural landscaping. QBCC licensed, Master Builders QLD members. No job is too small.",
   keywords: [
-    "handyman Australia",
-    "carpentry services",
-    "home renovations",
-    "painting services",
-    "property maintenance",
-    "The Handy Man Group",
-    "tradespeople",
-    "handyman Sydney",
+    "handyman Brisbane",
+    "carpentry Brisbane",
+    "home renovations Brisbane",
+    "structural landscaping Queensland",
+    "commercial fit-outs Brisbane",
+    "QBCC licensed carpenter",
+    "Master Builders Queensland",
+    "Joe Lewis Handyman",
+    "The Handyman Group",
   ],
-  authors: [{ name: "The Handy Man Group" }],
+  authors: [{ name: "Joe & Claudia — The Handyman & Carpentry Group" }],
   openGraph: {
-    title: "The Handy Man Group | Trusted Handyman Services in Australia",
+    title: "The Handyman & Carpentry Group | Brisbane Carpenters & Handymen",
     description:
-      "Premium carpentry, renovations, painting and property maintenance by licensed, insured professionals.",
+      "Family-owned by Joe & Claudia. Licensed carpentry, handyman services, renovations and structural landscaping across Brisbane. No job is too small.",
     url: "https://thehandymangroup.com.au",
-    siteName: "The Handy Man Group",
+    siteName: "The Handyman & Carpentry Group",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Handy Man Group | Trusted Handyman Services in Australia",
+    title: "The Handyman & Carpentry Group | Brisbane",
     description:
-      "Premium carpentry, renovations, painting and property maintenance by licensed, insured professionals.",
+      "Family-owned by Joe & Claudia. Licensed carpentry, handyman services, renovations and structural landscaping across Brisbane.",
   },
 };
 

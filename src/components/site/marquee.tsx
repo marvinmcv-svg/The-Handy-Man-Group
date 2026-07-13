@@ -1,35 +1,34 @@
-import { Hammer, Ruler, PaintRoller, Wrench, Plug, Grid3x3, Star } from "lucide-react";
+"use client";
+
+import { motion } from "framer-motion";
+import { Hammer, Wrench, Ruler, Building2, Trees, Sparkles, ArrowRight } from "lucide-react";
 
 const ITEMS = [
   { icon: Hammer, label: "Carpentry" },
+  { icon: Wrench, label: "Handyman Services" },
   { icon: Ruler, label: "Renovations" },
-  { icon: PaintRoller, label: "Painting" },
-  { icon: Wrench, label: "Maintenance" },
-  { icon: Plug, label: "Plumbing" },
-  { icon: Grid3x3, label: "Tiling" },
-  { icon: Star, label: "Free Quotes" },
-  { icon: Hammer, label: "Decking" },
-  { icon: Ruler, label: "Fit-outs" },
-  { icon: PaintRoller, label: "Decorating" },
+  { icon: Building2, label: "Commercial Spaces" },
+  { icon: Trees, label: "Structural Landscaping" },
+  { icon: Sparkles, label: "Home Makeovers" },
 ];
 
 export function Marquee() {
   return (
-    <section
-      aria-label="Services overview"
-      className="overflow-hidden border-y border-[#DDDDDD] bg-[#121117] py-5 text-white"
-    >
-      <div className="flex w-max animate-marquee items-center gap-10">
-        {[...ITEMS, ...ITEMS].map((item, idx) => (
-          <div
-            key={idx}
-            className="flex items-center gap-3 whitespace-nowrap text-[15px] font-medium uppercase tracking-[0.06em] text-white/85"
-          >
-            <item.icon className="h-5 w-5 text-[#D2151E]" strokeWidth={2} />
-            {item.label}
-            <span className="ml-7 h-1 w-1 bg-white/30" />
-          </div>
-        ))}
+    <section aria-label="Services overview" className="overflow-hidden border-y border-[#DDDDDD] bg-[#121117] py-5 text-white">
+      <div className="relative flex">
+        <motion.div
+          className="flex w-max shrink-0 items-center gap-10 pr-10"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ repeat: Infinity, duration: 30, ease: "linear" }}
+        >
+          {[...ITEMS, ...ITEMS, ...ITEMS].map((item, idx) => (
+            <div key={idx} className="flex items-center gap-3 whitespace-nowrap text-[15px] font-semibold uppercase tracking-[0.06em] text-white/85">
+              <item.icon className="h-5 w-5 text-[#D2151E]" strokeWidth={2} />
+              {item.label}
+              <ArrowRight className="ml-7 h-4 w-4 text-white/30" />
+            </div>
+          ))}
+        </motion.div>
       </div>
     </section>
   );
