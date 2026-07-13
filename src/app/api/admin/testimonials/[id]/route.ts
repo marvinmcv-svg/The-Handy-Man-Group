@@ -24,7 +24,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json().catch(() => null);
-    const { name, role, quote, order } = body ?? {};
+    const { name, role, quote, video, image, order } = body ?? {};
 
     const existing = await db.testimonial.findUnique({ where: { id } });
     if (!existing) {
@@ -38,6 +38,8 @@ export async function PUT(
     if (typeof name === "string" && name.trim()) data.name = name.trim();
     if (typeof role === "string") data.role = role.trim();
     if (typeof quote === "string" && quote.trim()) data.quote = quote.trim();
+    if (typeof video === "string") data.video = video.trim() || null;
+    if (typeof image === "string") data.image = image.trim() || null;
     if (order !== undefined && Number.isFinite(Number(order)))
       data.order = Number(order);
 

@@ -24,6 +24,8 @@ export type TestimonialData = {
   name: string;
   role: string;
   quote: string;
+  video: string | null;
+  image: string | null;
   order: number;
 };
 
@@ -66,6 +68,8 @@ export async function getTestimonials(): Promise<TestimonialData[]> {
     name: r.name,
     role: r.role,
     quote: r.quote,
+    video: r.video,
+    image: r.image,
     order: r.order,
   }));
 }

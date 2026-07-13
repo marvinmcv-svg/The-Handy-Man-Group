@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (unauth) return unauth;
   try {
     const body = await req.json().catch(() => null);
-    const { name, role, quote, order } = body ?? {};
+    const { name, role, quote, video, image, order } = body ?? {};
 
     if (typeof name !== "string" || !name.trim()) {
       return NextResponse.json(
@@ -55,6 +55,8 @@ export async function POST(req: NextRequest) {
         name: name.trim(),
         role: typeof role === "string" ? role.trim() : "",
         quote: quote.trim(),
+        video: typeof video === "string" && video.trim() ? video.trim() : null,
+        image: typeof image === "string" && image.trim() ? image.trim() : null,
         order: Number.isFinite(order) ? Number(order) : 0,
       },
     });

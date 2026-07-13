@@ -125,6 +125,9 @@
   .text-balance {
     text-wrap: balance;
   }
+  .text-pretty {
+    text-wrap: pretty;
+  }
   .container-drill {
     max-width: 1200px;
     margin-left: auto;
@@ -143,6 +146,19 @@
       padding-left: 16px;
       padding-right: 16px;
     }
+  }
+  /* Line clamp helpers (premium card text truncation) */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 }
 

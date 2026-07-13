@@ -119,7 +119,7 @@ export function MarvinChat() {
         whileTap={{ scale: 0.97 }}
       >
         <motion.span
-          className="relative inline-flex h-9 w-9 items-center justify-center bg-[#D2151E]"
+          className="relative inline-flex h-9 w-9 items-center justify-center bg-[#25D366]"
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: 0.3, ease: EASE }}
         >
@@ -133,8 +133,8 @@ export function MarvinChat() {
           {open ? "Close" : "Marvin"}
         </span>
         {!open && (
-          <span className="absolute -top-1 -left-1 h-3 w-3 bg-[#D2151E] rounded-full ring-2 ring-white">
-            <span className="absolute inset-0 bg-[#D2151E] rounded-full animate-ping opacity-75" />
+          <span className="absolute -top-1 -left-1 h-3 w-3 bg-[#25D366] rounded-full ring-2 ring-white">
+            <span className="absolute inset-0 bg-[#25D366] rounded-full animate-ping opacity-75" />
           </span>
         )}
       </motion.button>

@@ -42,6 +42,8 @@ export default async function EditTestimonialPage({
               name: testimonial.name,
               role: testimonial.role,
               quote: testimonial.quote,
+              video: testimonial.video,
+              image: testimonial.image,
               order: testimonial.order,
             }}
           />

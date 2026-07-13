@@ -54,6 +54,8 @@ model Testimonial {
   name      String
   role      String
   quote     String
+  video     String?  // optional video URL (uploaded media or external)
+  image     String?  // optional poster/thumbnail image URL
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

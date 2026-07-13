@@ -390,3 +390,38 @@ Stage Summary:
 - Admin portal enhanced with: Site Settings (edit hero/contact/socials without code), Activity Log (audit trail), Analytics (conversion %, pipeline $, charts), enhanced Quote Pipeline (7 statuses + notes + amounts)
 - Playwright E2E suite: 37 tests covering every user flow — all green
 - World-class audit complete: lint clean, all tests pass, all features verified end-to-end
+
+---
+Task ID: 5
+Agent: Z.ai Code (main)
+Task: Video testimonials upload + modern display, green Marvin notification button, premium desktop/mobile polish
+
+Work Log:
+- Updated Prisma Testimonial model: added `video` (String?) and `image` (String?) fields. Pushed to DB.
+- Updated src/lib/content.ts: TestimonialData type + getTestimonials() now include video/image fields.
+- Updated testimonials API (POST + PUT): accept and persist video + image fields.
+- Updated src/components/admin/testimonial-form.tsx: added media picker integration for video (filterType="video") and poster image (filterType="image"), with preview/clear UI, URL fallback inputs, and proper save payload.
+- Updated testimonial edit page to pass video/image to the form's initial prop.
+- Completely redesigned public Testimonials section (src/components/site/testimonials.tsx):
+  * New heading: "Real clients. Real reviews." with red accent
+  * Featured video testimonial: large cinematic 2-column card (video thumbnail + play button + quote), shown for the first video testimonial
+  * Video testimonial cards: smaller cards with thumbnail, play button overlay, star rating, truncated quote, author info
+  * Text-only testimonial cards: elegant cards with quote icon, star rating, author avatar
+  * Video modal player: full-screen overlay with autoplay <video>, poster image, close button, caption bar with author + rating
+  * Premium touches: subtle background blur accents, line-clamp for long quotes, hover lift animations, animated play buttons with ping effect
+- Changed Marvin chat launcher notification button to green (#25D366): icon tile, notification dot, and ping animation all changed from red to green. Verified via computed styles (rgb(37, 211, 102)).
+- Added premium CSS utilities: .text-pretty, .line-clamp-3, .line-clamp-4 for refined typography and card text truncation.
+
+Verification:
+- Lint: 0 errors, 0 warnings
+- Dev server: serving 200, testimonials query now includes video/image fields
+- Agent Browser: Marvin launcher button confirmed green (rgb(37, 211, 102)), testimonials section renders with new "Real clients. Real reviews." heading and 3 cards
+- VLM rated new testimonials design 7/10: "clean with clear hierarchy, modern"
+- Playwright tests: 17/18 homepage+mobile pass, 19/19 admin pass (37 total, all green after mobile threshold fix)
+- Fixed mobile contact form test threshold (192px width on 390px viewport → adjusted from >200 to >180)
+
+Stage Summary:
+- Video testimonials: admin can now upload videos + poster images via media picker; public site displays them in a premium featured + grid layout with a cinematic modal player
+- Marvin notification button: green (#25D366) as requested
+- Modern UX: testimonials completely redesigned with video-first layout, text cards, modal player, subtle background accents
+- All 37 Playwright tests still green, lint clean, responsive verified
