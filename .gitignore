@@ -52,3 +52,10 @@ prompt
 server.log
 # Skills directory
 /skills/
+# Database (regenerated via prisma db push + seed)
+db/*.db
+db/*.db-journal
+
+# Uploaded media (user uploads via admin)
+/public/uploads/*
+!/public/uploads/.gitkeep
