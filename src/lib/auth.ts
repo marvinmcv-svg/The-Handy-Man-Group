@@ -3,8 +3,8 @@ import { db } from "@/lib/db";
 import crypto from "crypto";
 
 // Admin credentials (as requested by the owner)
-const ADMIN_USERNAME = "Username123!";
-const ADMIN_PASSWORD = "Password123!";
+const ADMIN_USERNAME = "Joeisgay123!";
+const ADMIN_PASSWORD = "Joelewis123!";
 
 const SESSION_COOKIE = "hg_admin_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days

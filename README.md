@@ -32,7 +32,7 @@ Built with the **Drill design system** — modern industrial sophistication with
 - **Scroll progress bar** + extensive Framer Motion animations throughout
 
 ### Admin Portal (`/admin`)
-- **Login**: `Username123!` / `Password123!` (httpOnly cookie auth)
+- **Login**: `Joeisgay123!` / `Joelewis123!` (httpOnly cookie auth)
 - **Dashboard** with analytics: conversion rate, pipeline value, quotes by service (bar chart), quotes by status (pie chart)
 - **CRUD** for Services, Projects, Testimonials (with video upload), FAQs
 - **Media Library** — drag-and-drop image + video upload, picker integrated into forms
@@ -66,8 +66,8 @@ bun run dev
 Visit `http://localhost:3000` for the public site, or `http://localhost:3000/admin/login` for the admin portal.
 
 ### Admin Credentials
-- **Username**: `Username123!`
-- **Password**: `Password123!`
+- **Username**: `Joeisgay123!`
+- **Password**: `Joelewis123!`
 
 > ⚠️ Change these in `src/lib/auth.ts` before deploying to production.
 

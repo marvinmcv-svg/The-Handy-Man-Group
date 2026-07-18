@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 // Admin portal E2E tests — login, auth guard, dashboard, CRUD, media, settings.
 
-const CREDENTIALS = { username: "Username123!", password: "Password123!" };
+const CREDENTIALS = { username: "Joeisgay123!", password: "Joelewis123!" };
 
 async function adminLogin(page: import("@playwright/test").Page) {
   await page.goto("/admin/login");

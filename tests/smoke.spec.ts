@@ -18,7 +18,7 @@ import { test, expect, type Page } from "@playwright/test";
  */
 
 const BASE = "http://localhost:3000";
-const CREDENTIALS = { username: "Username123!", password: "Password123!" };
+const CREDENTIALS = { username: "Joeisgay123!", password: "Joelewis123!" };
 
 /* ---------- Helpers ---------- */
 

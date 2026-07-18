@@ -31,8 +31,8 @@ export default async function AdminLoginPage() {
 
         <p className="mt-6 text-center text-xs text-[#999999]">
           Demo credentials:{" "}
-          <span className="font-semibold text-[#F3F4F6]">Username123!</span> /{" "}
-          <span className="font-semibold text-[#F3F4F6]">Password123!</span>
+          <span className="font-semibold text-[#F3F4F6]">Joeisgay123!</span> /{" "}
+          <span className="font-semibold text-[#F3F4F6]">Joelewis123!</span>
         </p>
       </div>
     </main>
