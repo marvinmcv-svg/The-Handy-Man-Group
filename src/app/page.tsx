@@ -32,7 +32,7 @@ export default async function Home() {
     <>
       <ScrollProgress />
       <SiteHeader />
-      <main className="flex-1">
+      <main id="main-content" className="flex-1">
         <Hero />
         <Marquee />
         <Projects projects={projects} />

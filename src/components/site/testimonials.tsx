@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Quote, Star, Play, X, Video } from "lucide-react";
 import { Reveal, StaggerGroup, StaggerItem } from "@/components/site/motion-primitives";
@@ -294,6 +294,29 @@ function VideoModal({
   onClose: () => void;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Close on Escape + trap focus inside the modal (basic accessibility).
+  useEffect(() => {
+    if (!testimonial) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    // Focus the close button when the modal opens.
+    const t = setTimeout(() => closeBtnRef.current?.focus(), 100);
+    // Lock body scroll while modal is open.
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      clearTimeout(t);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [testimonial, onClose]);
 
   return (
     <AnimatePresence>
@@ -305,6 +328,9 @@ function VideoModal({
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
           onClick={onClose}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Video testimonial from ${testimonial.name}`}
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -316,10 +342,11 @@ function VideoModal({
           >
             {/* Close button */}
             <button
+              ref={closeBtnRef}
               type="button"
               onClick={onClose}
               aria-label="Close video"
-              className="absolute -top-12 right-0 inline-flex h-10 w-10 items-center justify-center bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-[#D2151E]"
+              className="absolute -top-12 right-0 inline-flex h-10 w-10 items-center justify-center bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-[#D2151E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D2151E]"
             >
               <X className="h-5 w-5" />
             </button>

@@ -23,6 +23,10 @@ model QuoteRequest {
   quoteAmount String?  // quoted dollar amount (string to avoid float issues)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([service])
 }
 
 model Service {
@@ -34,6 +38,8 @@ model Service {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([order])
 }
 
 model Project {
@@ -47,6 +53,8 @@ model Project {
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([order])
 }
 
 model Testimonial {
@@ -59,6 +67,8 @@ model Testimonial {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([order])
 }
 
 model Faq {
@@ -68,6 +78,8 @@ model Faq {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([order])
 }
 
 model AdminSession {
@@ -75,6 +87,8 @@ model AdminSession {
   token     String   @unique
   createdAt DateTime @default(now())
   expiresAt DateTime
+
+  @@index([expiresAt])
 }
 
 model Media {
@@ -88,6 +102,9 @@ model Media {
   width         Int?
   height        Int?
   createdAt     DateTime @default(now())
+
+  @@index([type])
+  @@index([createdAt])
 }
 
 model Setting {
@@ -103,4 +120,7 @@ model ActivityLog {
   entityId  String?
   detail    String?
   createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entity])
 }

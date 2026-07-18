@@ -33,6 +33,8 @@ export function MarvinChat() {
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
 
   // Auto-scroll to bottom on new messages / typing / panel open
   useEffect(() => {
@@ -44,6 +46,28 @@ export function MarvinChat() {
   useEffect(() => {
     if (open) {
       const t = setTimeout(() => inputRef.current?.focus(), 350);
+      return () => clearTimeout(t);
+    }
+  }, [open]);
+
+  // Close on Escape + restore focus to launcher (accessibility).
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  // Restore focus to the launcher when the panel closes.
+  useEffect(() => {
+    if (!open) {
+      // Small delay so the exit animation doesn't fight us.
+      const t = setTimeout(() => launcherRef.current?.focus(), 50);
       return () => clearTimeout(t);
     }
   }, [open]);
@@ -108,8 +132,10 @@ export function MarvinChat() {
     <>
       {/* Floating button */}
       <motion.button
+        ref={launcherRef}
         type="button"
         aria-label="Open Marvin chat"
+        aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
         className="fixed z-[60] bottom-5 right-5 sm:bottom-6 sm:right-6 flex items-center gap-2 bg-[#121117] text-white pl-3 pr-4 py-3 shadow-2xl shadow-black/40 hover:bg-[#1f1f27] transition-colors"
         initial={{ opacity: 0, y: 24, scale: 0.9 }}
@@ -144,6 +170,10 @@ export function MarvinChat() {
         {open && (
           <motion.div
             key="marvin-panel"
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Marvin chat"
             initial={{ opacity: 0, y: 30, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.97 }}

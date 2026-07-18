@@ -33,6 +33,16 @@ export function SiteHeader() {
     };
   }, [open]);
 
+  // Close mobile menu on Escape (accessibility).
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <motion.header
       initial={{ y: -100 }}

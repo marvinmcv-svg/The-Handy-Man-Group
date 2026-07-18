@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Instagram, ArrowUpRight } from "lucide-react";
 import { Reveal } from "@/components/site/motion-primitives";
@@ -22,10 +22,20 @@ const IG_POSTS = [
   { shortcode: "DL9EgZ3PXf9", caption: "Workshop" },
 ];
 
+// Shape of the Instagram embed.js global injected by the SDK.
+interface InstagramEmbedGlobal {
+  Embeds: { process: () => void };
+}
+
+declare global {
+  interface Window {
+    instgrm?: InstagramEmbedGlobal;
+  }
+}
+
 export function InstagramFeed() {
   const [visibleCount, setVisibleCount] = useState(4);
   const [hovered, setHovered] = useState<number | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   // Load Instagram embed script
   useEffect(() => {
@@ -39,8 +49,8 @@ export function InstagramFeed() {
 
   // Process embeds when visible count changes
   useEffect(() => {
-    if (typeof window !== "undefined" && (window as any).instgrm) {
-      (window as any).instgrm.Embeds.process();
+    if (typeof window !== "undefined" && window.instgrm) {
+      window.instgrm.Embeds.process();
     }
   }, [visibleCount]);
 
@@ -80,10 +90,7 @@ export function InstagramFeed() {
         </Reveal>
 
         {/* Instagram embed grid */}
-        <div
-          ref={containerRef}
-          className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
-        >
+        <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {visiblePosts.map((post, idx) => (
             <motion.div
               key={post.shortcode}

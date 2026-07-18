@@ -67,3 +67,5 @@ playwright-report/
 
 # User uploads (screenshots etc)
 /upload/
+tool-results/
+.zscripts/

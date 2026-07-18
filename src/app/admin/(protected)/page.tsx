@@ -2,6 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { PageHeader, AdminContainer } from "@/components/admin/page-header";
 import { ServiceBarChart, StatusPieChart } from "@/components/admin/dashboard-charts";
+import { maybeSweepOldActivity } from "@/lib/activity";
 import {
   Wrench,
   FolderKanban,
@@ -35,6 +36,9 @@ function formatDate(iso: Date) {
 }
 
 export default async function AdminDashboardPage() {
+  // Opportunistic retention sweep — runs at most once per hour.
+  await maybeSweepOldActivity();
+
   const [
     servicesCount,
     projectsCount,
