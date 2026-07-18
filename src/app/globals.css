@@ -160,6 +160,51 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
+
+  /* ---------- PREMIUM UTILITIES (G1 — animation infrastructure) ---------- */
+
+  /* SVG noise texture — subtle film grain for cinematic depth (4% opacity) */
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='hg-noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.92' numOctaves='3' stitchTiles='stitch' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23hg-noise)' /%3E%3C/svg%3E");
+    background-size: 240px 240px;
+    opacity: 0.05;
+  }
+
+  /* Outlined text — white fill with charcoal stroke (for $50k-style headlines) */
+  .text-stroke {
+    -webkit-text-stroke: 1.5px #121117;
+    color: #FFFFFF;
+  }
+  .text-stroke-red {
+    -webkit-text-stroke: 1.5px #D2151E;
+    color: transparent;
+  }
+
+  /* Subtle glassmorphism — use sparingly over imagery */
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Mask that fades an element to transparent at the bottom */
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+    mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  }
+  .mask-fade-t {
+    -webkit-mask-image: linear-gradient(to top, black 50%, transparent 100%);
+    mask-image: linear-gradient(to top, black 50%, transparent 100%);
+  }
+
+  /* 3D transform helpers */
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
 }
 
 /* Custom scrollbar for long lists */
@@ -184,4 +229,39 @@
 }
 .animate-marquee {
   animation: marquee 40s linear infinite;
+}
+
+/* ---------- PREMIUM GLOBAL SCROLLBAR (G1) ----------
+   Thin charcoal scrollbar with red hover — premium feel across the site. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #121117 #F3F4F6;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #F3F4F6;
+}
+::-webkit-scrollbar-thumb {
+  background: #121117;
+  border: 2px solid #F3F4F6;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D2151E;
+}
+
+/* Respect reduced motion — disable smooth scrolling and long transitions */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

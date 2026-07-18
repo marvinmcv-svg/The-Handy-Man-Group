@@ -1,7 +1,19 @@
 "use client";
 
-import { motion, useInView, useAnimation, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useAnimation,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useScroll,
+  useReducedMotion,
+} from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+
+/** Premium cubic-bezier easing — used across all hero / cinematic transitions. */
+export const EASE_PREMIUM = [0.22, 1, 0.36, 1] as const;
 
 /* ---------- Reveal: fade + slide up on scroll into view ---------- */
 export function Reveal({
@@ -302,3 +314,252 @@ export const marqueeVariants = {
     },
   },
 };
+
+/* ============================================================
+   PREMIUM PRIMITIVES (G1 — animation infrastructure upgrade)
+   ============================================================ */
+
+/* ---------- MagneticButton: anchor/button that follows the cursor with spring physics ---------- */
+export function MagneticButton({
+  children,
+  href,
+  className,
+  strength = 0.3,
+  onClick,
+  "aria-label": ariaLabel,
+}: {
+  children: ReactNode;
+  href?: string;
+  className?: string;
+  strength?: number;
+  onClick?: (e: React.MouseEvent) => void;
+  "aria-label"?: string;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 220, damping: 18, mass: 0.2 });
+  const sy = useSpring(y, { stiffness: 220, damping: 18, mass: 0.2 });
+
+  function onMove(e: React.MouseEvent) {
+    if (reduce || !ref.current) return;
+    const rect = (ref.current as HTMLElement).getBoundingClientRect();
+    const relX = e.clientX - rect.left - rect.width / 2;
+    const relY = e.clientY - rect.top - rect.height / 2;
+    x.set(relX * strength);
+    y.set(relY * strength);
+  }
+  function onLeave() {
+    x.set(0);
+    y.set(0);
+  }
+
+  const Comp: any = href ? motion.a : motion.button;
+  return (
+    <Comp
+      ref={ref as any}
+      href={href}
+      type={href ? undefined : "button"}
+      aria-label={ariaLabel}
+      className={className}
+      style={{ x: sx, y: sy, display: "inline-flex" }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+      onClick={onClick}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      data-cursor="hover"
+    >
+      {children}
+    </Comp>
+  );
+}
+
+/* ---------- TiltCard: 3D tilt that responds to mouse position ---------- */
+export function TiltCard({
+  children,
+  className,
+  intensity = 10,
+}: {
+  children: ReactNode;
+  className?: string;
+  intensity?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const rx = useMotionValue(0);
+  const ry = useMotionValue(0);
+  const srx = useSpring(rx, { stiffness: 200, damping: 20, mass: 0.3 });
+  const sry = useSpring(ry, { stiffness: 200, damping: 20, mass: 0.3 });
+
+  function onMove(e: React.MouseEvent) {
+    if (reduce || !ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const px = (e.clientX - rect.left) / rect.width;
+    const py = (e.clientY - rect.top) / rect.height;
+    ry.set((px - 0.5) * 2 * intensity);
+    rx.set(-(py - 0.5) * 2 * intensity);
+  }
+  function onLeave() {
+    rx.set(0);
+    ry.set(0);
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      style={{
+        rotateX: srx,
+        rotateY: sry,
+        transformPerspective: 1000,
+        transformStyle: "preserve-3d",
+      }}
+      onMouseMove={onMove}
+      onMouseLeave={onLeave}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ---------- TextReveal: character-by-character reveal for headings ---------- */
+export function TextReveal({
+  text,
+  className,
+  delay = 0,
+  stagger = 0.03,
+  trigger = "mount",
+}: {
+  text: string;
+  className?: string;
+  delay?: number;
+  stagger?: number;
+  trigger?: "mount" | "inView";
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const chars = Array.from(text);
+  const animate = trigger === "mount" ? true : inView;
+
+  if (reduce) {
+    return (
+      <span ref={ref} className={className} aria-label={text}>
+        {text}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      ref={ref}
+      className={className}
+      aria-label={text}
+      style={{ display: "inline-block" }}
+    >
+      {chars.map((ch, i) => (
+        <span
+          key={i}
+          style={{ display: "inline-block", overflow: "hidden", verticalAlign: "top" }}
+        >
+          <motion.span
+            style={{ display: "inline-block" }}
+            initial={{ y: "110%" }}
+            animate={animate ? { y: 0 } : { y: "110%" }}
+            transition={{
+              duration: 0.7,
+              delay: delay + i * stagger,
+              ease: EASE_PREMIUM,
+            }}
+          >
+            {ch === " " ? "\u00A0" : ch}
+          </motion.span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/* ---------- ScrollReveal: animates based on scroll progress through viewport ---------- */
+export function ScrollReveal({
+  children,
+  className,
+  y = 60,
+  opacity = true,
+}: {
+  children: ReactNode;
+  className?: string;
+  y?: number;
+  opacity?: boolean;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const yTransform = useTransform(scrollYProgress, [0, 0.5, 1], [y, 0, -y]);
+  const opacityTransform = useTransform(
+    scrollYProgress,
+    [0, 0.25, 0.75, 1],
+    [0, 1, 1, 0]
+  );
+
+  if (reduce) {
+    return (
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    );
+  }
+
+  return (
+    <motion.div
+      ref={ref}
+      className={className}
+      style={{
+        y: yTransform,
+        opacity: opacity ? opacityTransform : 1,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ---------- PinnedSection: pins a section while scrolling for a dramatic effect ---------- */
+export function PinnedSection({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={className} style={{ position: "relative" }}>
+      <div
+        style={{
+          position: "sticky",
+          top: 0,
+          height: "100svh",
+          overflow: "hidden",
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- GrainOverlay: fixed-position subtle film grain texture (CSS-only SVG noise) ---------- */
+export function GrainOverlay() {
+  return (
+    <div
+      aria-hidden="true"
+      className="grain pointer-events-none fixed inset-0 z-[60]"
+      style={{ mixBlendMode: "overlay" }}
+    />
+  );
+}

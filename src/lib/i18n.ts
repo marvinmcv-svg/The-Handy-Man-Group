@@ -82,6 +82,12 @@ export const translations = {
     "stats.title": "Facts & Figures",
     "stats.subtitle": "The numbers that show why Brisbane keeps coming back to Joe & Claudia.",
 
+    // Process
+    "process.eyebrow": "How we work",
+    "process.title": "A clear process, no guesswork.",
+    "process.subtitle":
+      "From the first phone call to the final walk-through, you'll always know what's happening, when, and what it costs.",
+
     // Testimonials
     "testimonials.eyebrow": "Our testimonials",
     "testimonials.title1": "Real clients.",
@@ -232,6 +238,12 @@ export const translations = {
     "stats.title": "Datos y Cifras",
     "stats.subtitle":
       "Los números que demuestran por qué Brisbane sigue confiando en Joe y Claudia.",
+
+    // Process
+    "process.eyebrow": "Cómo trabajamos",
+    "process.title": "Un proceso claro, sin conjeturas.",
+    "process.subtitle":
+      "Desde la primera llamada hasta la revisión final, siempre sabrás qué está pasando, cuándo y cuánto cuesta.",
 
     // Testimonials
     "testimonials.eyebrow": "Nuestras reseñas",

@@ -15,6 +15,8 @@ import { InstagramFeed } from "@/components/site/instagram-feed";
 import { ScrollProgress } from "@/components/site/scroll-progress";
 import { MarvinChat } from "@/components/site/marvin-chat";
 import { WhatsAppWidget } from "@/components/site/whatsapp-widget";
+import { CustomCursor } from "@/components/site/custom-cursor";
+import { PagePreloader } from "@/components/site/page-preloader";
 import { getServices, getProjects, getTestimonials, getFaqs } from "@/lib/content";
 
 // Revalidate every 60s so admin edits show up
@@ -30,6 +32,8 @@ export default async function Home() {
 
   return (
     <>
+      <CustomCursor />
+      <PagePreloader />
       <ScrollProgress />
       <SiteHeader />
       <main id="main-content" className="flex-1">

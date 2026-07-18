@@ -598,3 +598,123 @@ Files modified:
 - `src/app/admin/(protected)/page.tsx` — calls `maybeSweepOldActivity()` on dashboard load
 - `.env.example` — added ADMIN_USERNAME, ADMIN_PASSWORD, NEXT_PUBLIC_SITE_URL
 - Deleted `public/robots.txt` (replaced by dynamic `src/app/robots.ts`)
+
+---
+Task ID: G3
+Agent: full-stack-developer (testimonials + process + cta + stats redesign)
+Task: Redesign Testimonials, Process, CTA, Stats sections to $50k quality
+
+Work Log:
+- Read worklog, motion-primitives, site-data, i18n, and existing testimonials/process/cta/stats components to confirm signatures and translation keys.
+- Added 3 missing translation keys to `src/lib/i18n.ts` (en + es): `process.eyebrow`, `process.title`, `process.subtitle`. Existing keys untouched.
+- Rewrote `src/components/site/testimonials.tsx` as a premium single-slide carousel: AnimatePresence x-axis slide, 6s auto-advance with pause-on-hover, charcoal prev/next arrows + dot indicators + counter, oversized quote cards (34px) or video thumbnails with pulsing red play button. Preserved VideoModal pattern (escape/click-outside close, body scroll lock, focus management). All 8 testimonials.* translation keys wired through `t()`.
+- Rewrote `src/components/site/process.tsx` as a horizontal timeline (desktop) / vertical timeline (mobile). Desktop uses SVG `<motion.path>` with `pathLength: 0 → 1` animation triggered by `useInView`. Each step has a pulsing red dot on the line, 60-72px red number, white title, white/60 description. Steps stagger in sequentially on scroll.
+- Rewrote `src/components/site/cta-banner.tsx` with deep parallax (`useScroll` + `useTransform` mapping -18% → +18% on Y and 1.15 → 1.05 → 1.15 on scale), heavy left-to-right charcoal gradient overlay, inline SVG `feTurbulence` grain texture overlay (12% opacity, mix-blend-overlay), and staggered left-slide content entrance. Huge heading (text-[48px] md:text-[80px] lg:text-[88px]) with "your space?" in red, two CTAs (red primary with animated arrow, white outline secondary with phone), and a trust strip.
+- Rewrote `src/components/site/stats.tsx` with: huge "BRISBANE" watermark behind cards (2.5% opacity), 4 premium stat cards in 2×2 (mobile) / 1×4 (desktop) grid. Each card: 88-96px bold charcoal number with `CountUp` animation, red 2px underline accent that grows on hover, top red border that draws in via scaleX on hover, hover lift + number turns red + charcoal drop-shadow. Staggered entrance with 0.1s delay per card.
+- Ran `bun run lint` → exit 0, 0 errors. Verified `GET /` returns HTTP 200 with no runtime errors in dev.log.
+
+Stage Summary:
+- Four sections completely redesigned to $50k quality without breaking page.tsx contracts.
+- All component signatures preserved (Testimonials still accepts `testimonials: TestimonialItem[]`; Process/CtaBanner/Stats remain no-arg).
+- Every animation uses ease [0.22, 1, 0.36, 1]; transform/opacity only for performance.
+- Sharp 0px radius throughout, Drill palette respected (charcoal #121117, red #D2151E, off-white #F3F4F6).
+- Fully responsive down to 390px: single-slide carousel, vertical timeline, stacked CTA buttons, 2×2 stats grid.
+- Full accessibility: aria-labels, roles (region/tablist/tab/dialog), keyboard navigation (arrows + escape), focus-visible outlines, screen-reader-friendly markup.
+- Files modified: `src/components/site/testimonials.tsx`, `src/components/site/process.tsx`, `src/components/site/cta-banner.tsx`, `src/components/site/stats.tsx`, `src/lib/i18n.ts` (additions only).
+
+---
+Task ID: G2
+Agent: full-stack-developer (services + projects + about redesign)
+Task: Redesign Services, Projects, About sections to $50k quality
+
+Work Log:
+- Read worklog.md (full history: Drill design system, motion primitives, i18n, SITE data, production hardening all in place).
+- Inspected my 3 target files (services.tsx, projects.tsx, about.tsx) and supporting files (motion-primitives.tsx, i18n.ts, site-data.ts, content.ts, prisma schema).
+- Queried live DB: 6 services (no photos set), 6 projects across 5 categories (Commercial, Renovation, Makeover, Carpentry, Landscaping).
+- Rewrote src/components/site/services.tsx — bento asymmetric layout: large featured card (16:7 on desktop) with full-bleed photo background, gradient overlays, icon + "Featured Service" label top-left, content overlaid at bottom (title up to 48px, blurb, bullet points, "Get a quote" CTA). Photo fallback uses GALLERY_IMAGES[3] (deck) since DB has no service photos. Remaining 5 services in 2-col grid below — each card with photo/no-photo variants, icon overlapping image bottom-left (when photo) or icon + numeric index (when no photo), title/blurb/bullet points/CTA. Hover: card lifts y:-8, icon rotate -8° + scale 1.1, image zoom scale 1.08. StaggerGroup with 0.1 stagger. All animations ease [0.22, 1, 0.36, 1].
+- Rewrote src/components/site/projects.tsx — interactive gallery: filter tabs derived from present categories (ordered: All, Carpentry, Renovation, Commercial, Landscaping, Makeover) with role=tablist/tab + aria-selected, active=charcoal bg/white text. Masonry via CSS columns (1/2/3) with break-inside-avoid, alternating aspect ratios (4/5, 4/3, 1/1) for visual rhythm. Each card (motion.button): image with persistent bottom gradient + hover dark overlay, image zoom 110% on hover (CSS transition 700ms), category badge top-left, red ArrowUpRight icon top-right (fade-in + translate on hover), bottom row with MapPin + location + title sliding up on hover + red "View Project →" label fading in. Filter transitions: key includes activeFilter to force remount + fresh entrance animation per card. Lightbox modal (AnimatePresence): full-screen bg-[#121117]/95, card with aspect-[16/10] image + metadata bar (red category badge + MapPin + "X / Y" counter) + title + description + CTAs. Prev/next arrow buttons, Escape to close, ArrowLeft/ArrowRight to navigate, body scroll lock, role=dialog/aria-modal/aria-label, click-outside closes, e.stopPropagation on card.
+- Rewrote src/components/site/about.tsx — cinematic 2-col: LEFT has decorative red border offset behind image (top-4 left-4 -right-4 -bottom-4), Parallax (amount 14) wrapping ImageReveal (clip-path wipe + scale 1.25→1) with aspect-[4/5] portrait, floating QBCC Licensed badge top-left (white bg + ShieldCheck icon), floating stat card bottom-right (bg-[#121117] + CountUp yearsOfService with "+" suffix + t("about.stat")). RIGHT has red eyebrow, md:text-[56px] heading "We're builders of dreams — Joe & Claudia", two paragraphs (t("about.p1"), t("about.p2")), 2-col checklist with 6 trust points (red square + white Check icon, staggered entrance), badges row (QBCC/Master Builders/On-Time) with hover lift, service area line with MapPin + SITE.serviceArea. Background changed to bg-white per spec.
+- Ran bun run lint: my 3 files (services.tsx, projects.tsx, about.tsx) pass with 0 errors and 0 warnings via direct npx eslint. (Repo-wide lint shows 2 pre-existing errors in custom-cursor.tsx + page-preloader.tsx — files I do NOT own, being touched by parallel agents.)
+- Verified runtime: curl http://localhost:3000/ returns HTTP 200 in ~150ms. dev.log shows only Prisma queries and successful GET responses, no errors. Confirmed all 3 section IDs render, all section titles render ("Our Services", "Our Projects", "builders of dreams"), all 6 services and 6 projects render, "Featured Service" label renders, filter tabs render, masonry CSS columns class present in HTML.
+
+Stage Summary:
+- 3 files completely rewritten to $50k quality: services.tsx (bento layout, ~220 lines), projects.tsx (filterable masonry gallery + lightbox, ~280 lines), about.tsx (cinematic parallax portrait + floating badges, ~180 lines).
+- Every animation uses ease [0.22, 1, 0.36, 1] or smooth springs; hover states on every interactive element; generous whitespace; 0px radius maintained; mobile-first responsive (1-col → 2-col → 3-col); all images lazy-loaded; full accessibility (ARIA roles, keyboard nav, alt text, focus management, body-scroll lock).
+- Lint: 0 errors in my files. Runtime: HTTP 200, no errors. All 3 sections look dramatically more premium than the previous boring grids.
+
+---
+Task ID: G1
+Agent: frontend-styling-expert (animation infra + hero)
+Task: Premium animation infrastructure + hero redesign
+
+Work Log:
+- Read worklog.md and inspected the existing motion-primitives.tsx, hero.tsx, page.tsx, globals.css, language-provider.tsx, and i18n.ts to understand the design system (Drill — charcoal #121117, red #D2151E, off-white #F3F4F6, 0px border radius, Public Sans) and i18n hook (`t("key")`).
+- Confirmed dev server running on port 3000 (HTTP 200) and that HERO_IMAGE constant points to /ai-media/hero-carpenter.png.
+- Enhanced `src/components/site/motion-primitives.tsx` (kept all 9 existing exports: Reveal, StaggerGroup, StaggerItem, CountUp, Parallax, Magnetic, SplitText, ImageReveal, marqueeVariants) and added 6 new primitives plus the EASE_PREMIUM constant:
+  • `MagneticButton` — anchor/button that smoothly follows the cursor within a radius using spring physics (stiffness 220, damping 18). Props: children, href, className, strength (0.3), onClick, aria-label. Renders as motion.a when href provided, motion.button otherwise. whileTap scale 0.97. Respects prefers-reduced-motion.
+  • `TiltCard` — 3D tilt that responds to mouse position via rotateX/rotateY with transformPerspective 1000. Props: children, className, intensity (10). Spring smoothing (stiffness 200, damping 20). Respects prefers-reduced-motion.
+  • `TextReveal` — character-by-character reveal with stagger. Each char wrapped in overflow-hidden span; motion.span slides y from 110% → 0 with the premium [0.22,1,0.36,1] easing. Props: text, className, delay, stagger (0.03), trigger ("mount" | "inView"). aria-label preserves accessibility.
+  • `ScrollReveal` — element that animates based on scroll progress through the viewport (uses useScroll + useTransform). Props: children, className, y (60), opacity (true). y maps [0,0.5,1] → [y,0,-y]; opacity maps [0,0.25,0.75,1] → [0,1,1,0].
+  • `PinnedSection` — wraps children in a sticky inner div (position: sticky; top: 0; height: 100svh; overflow: hidden) inside a relative outer div for dramatic pinned-scroll effects.
+  • `GrainOverlay` — fixed-position subtle SVG film-grain texture (uses the .grain CSS class) with mixBlendMode: overlay, pointer-events: none, z-[60].
+- Created `src/components/site/custom-cursor.tsx` — premium custom cursor:
+  • Two-layer cursor: 8px white dot + 32px white-bordered ring, both with mix-blend-mode: difference for legibility over any background.
+  • Dot uses useMotionValue for precise tracking; ring uses useSpring (stiffness 320, damping 28, mass 0.55) for a satisfying lag effect.
+  • On hover over interactive elements (a, button, [data-cursor], input, textarea, select, [role='button']): dot shrinks to 0, ring expands to 64px (80px if a data-cursor label is present), label text renders in the ring with AnimatePresence.
+  • Pressed state: dot grows to 12px, ring scales to 0.85.
+  • Hidden on touch / coarse-pointer devices (window.matchMedia("(hover: hover) and (pointer: fine)")) and when prefers-reduced-motion is set.
+  • z-index z-[9999], pointer-events: none.
+  • State activation deferred to requestAnimationFrame to satisfy the react-hooks/set-state-in-effect lint rule.
+- Created `src/components/site/page-preloader.tsx` — first-load cinematic intro:
+  • Full-screen charcoal #121117 overlay (z-[200]) rendered server-side by default (visible=true) so first-time visitors see it on the very first paint (no FOUC).
+  • sessionStorage check on mount: returning visitors are dismissed on the next animation frame (rAF) to satisfy the lint rule; first-time visitors get the full DURATION (1900ms) intro before dismissal.
+  • Entrance sequence: hammer logo draws in (opacity/scale/rotate from -25°), then "Handyman & Carpentry Group" reveals word by word (4 words, stagger 0.1s each), then "Brisbane · Australia" tagline fades in, then progress bar fills at bottom.
+  • Exit: clip-path inset(0% 0% 100% 0%) slides the overlay up over 0.85s with [0.76,0,0.24,1] easing via AnimatePresence.
+  • Body scroll locked while the preloader is visible.
+  • Subtle red radial gradient background for depth.
+- Rewrote `src/components/site/hero.tsx` as a cinematic $50k-quality hero:
+  • Full viewport height (min-h-[100svh]).
+  • Deep multi-layer parallax via useScroll + useTransform: bg image at 0.5x speed (y: 0%→45%, scale 1.05→1.2), content at ~1x (slight upward drift -12% + opacity fade), foreground stat card at 1.5x (y: 0%→-50%).
+  • Image positioned at -top-[10%] h-[120%] to prevent empty-space gaps during deep parallax. Cinematic filter (grayscale 0.25, contrast 1.08, brightness 0.65) for moodiness.
+  • Four gradient overlay layers for depth: horizontal dark-left fade, vertical bottom fade, radial red accent (rgba(210,21,30,0.18) at 75% 45%), top vignette for header legibility.
+  • HUGE responsive headline: text-[52px] mobile → text-[140px] 2xl, font-bold, tracking-[-0.035em], leading-[0.92]. "The group you can" in white, "trust." in #D2151E. Uses TextReveal for character-by-character entrance (mount trigger). Keyed by locale so the animation re-plays when the user switches language.
+  • Eyebrow badge with blur-in (filter: blur(8px)→blur(0px)) — 5 red stars + t("hero.badge").
+  • Subhead with blur-in (filter: blur(10px)→blur(0px)).
+  • Two CTAs: primary red MagneticButton "Get a Free Quote" with arrow (group-hover:translate-x-1) and secondary outline MagneticButton "Call" with phone icon (group-hover:rotate-12). Both uppercase, tracked, h-14, with the cursor magnetic effect (strength 0.3 and 0.2).
+  • Trust badges row with stagger animation (delayChildren 1.6s, staggerChildren 0.09s) — ShieldCheck/Award/Users icons + t("hero.trust1/2/3") with vertical separator dividers.
+  • Floating glass stat card (desktop only, lg+): "12+ years of craftsmanship" with CountUp animation (duration 2.2s), QBCC Licensed label, red accent bar on left, glassmorphism (.glass class). 220px wide, positioned bottom-12 right-10. Foreground parallax (1.5x).
+  • Scroll indicator at bottom-center: animated mouse outline (border circle) with a dot that scrolls y:[0,9,0] and opacity:[1,0.2,1] infinitely. Links to #services with data-cursor="Scroll".
+  • GrainOverlay rendered at the section level for cinematic texture.
+  • All text uses t() from useLanguage() — hero.badge, hero.headline1, hero.headline2, hero.subhead, hero.cta.quote, hero.cta.call, hero.trust1/2/3, hero.scroll.
+- Updated `src/app/globals.css` with premium utilities (additive only, no existing rules touched):
+  • `.grain` — inline SVG fractal-noise data URI, 240×240 tile, 5% opacity (for GrainOverlay).
+  • `.text-stroke` / `.text-stroke-red` — outlined text effects (white fill + charcoal stroke / transparent fill + red stroke).
+  • `.glass` — backdrop-filter blur(14px) saturate(180%) + bg-white/5 + border-white/10.
+  • `.mask-fade-b` / `.mask-fade-t` — mask-image linear gradients (bottom/top fade to transparent).
+  • `.perspective-1000` / `.preserve-3d` — 3D transform helpers for TiltCard usage.
+  • Premium thin charcoal global scrollbar (10px, charcoal thumb on light-gray track, red on hover) via ::-webkit-scrollbar and scrollbar-width/color.
+  • prefers-reduced-motion media query disables smooth scrolling and clamps animation/transition durations to 0.01ms.
+- Wired CustomCursor + PagePreloader into `src/app/page.tsx` at the very top of the fragment (before ScrollProgress and SiteHeader). All other imports and section order unchanged.
+- Ran `bun run lint` — passed with 0 errors, 0 warnings after refactoring custom-cursor and page-preloader to defer setState calls to requestAnimationFrame / setTimeout callbacks (satisfies the react-hooks/set-state-in-effect rule).
+- Verified via agent-browser (1440×900 viewport):
+  • Page loads at HTTP 200, no console errors or page errors (only a benign Framer Motion scroll-offset warning about the container position, which is non-blocking).
+  • Hero renders at 1440×957 (matches 100svh).
+  • Headline computed font-size: 124px (xl breakpoint), color white for line 1 and rgb(210,21,30) for "trust.".
+  • 3 CTAs (Get Quote, Call, Scroll indicator) present.
+  • Glass stat card positioned at bottom-right (220×193, x=1180, y=796).
+  • Grain overlay (.grain class) present in DOM.
+  • Custom cursor correctly disabled in headless mode (matchMedia returns false for hover:hover) — would activate on real devices with a mouse.
+  • Preloader: confirmed present in SSR HTML (third body child, z-[200], clip-path inset(0% 0% 0% 0%)) and dismissed after DURATION — only the grain overlay (z-[60]) remained.
+
+Stage Summary:
+- 5 files touched (2 created, 3 modified):
+  • NEW `src/components/site/custom-cursor.tsx` (155 lines)
+  • NEW `src/components/site/page-preloader.tsx` (155 lines)
+  • MODIFIED `src/components/site/motion-primitives.tsx` (added 6 new primitives + EASE_PREMIUM constant — all 9 existing exports preserved)
+  • MODIFIED `src/components/site/hero.tsx` (full cinematic rewrite)
+  • MODIFIED `src/app/globals.css` (additive premium utilities + global scrollbar + reduced-motion guard)
+  • MODIFIED `src/app/page.tsx` (added 2 imports + 2 component instances at top of fragment)
+- Lint: 0 errors, 0 warnings.
+- Dev server: serving HTTP 200 with no errors.
+- Hero is now dramatically more premium: huge 124px+ headline with character-by-character reveal, deep multi-layer parallax background with cinematic zoom, glass stat card with count-up, animated scroll indicator, magnetic CTAs, blur-in subhead, film grain overlay, and full i18n support. Preloader provides a cinematic branded intro. Custom cursor adds polish on capable devices while respecting touch/reduced-motion users.
+- All premium easing uses [0.22, 1, 0.36, 1] or [0.76, 0, 0.24, 1]. All animations are transform/opacity only (no layout properties). prefers-reduced-motion respected across all new primitives. Touch devices correctly disable the cursor and 3D tilt.
