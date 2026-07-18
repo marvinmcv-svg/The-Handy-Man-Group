@@ -60,3 +60,10 @@ db/*.db-journal
 # Uploaded media (user uploads via admin)
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Test results
+test-results/
+playwright-report/
+
+# User uploads (screenshots etc)
+/upload/
