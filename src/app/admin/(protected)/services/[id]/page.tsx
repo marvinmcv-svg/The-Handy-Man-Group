@@ -51,6 +51,7 @@ export default async function EditServicePage({
               blurb: service.blurb,
               icon: service.icon,
               points,
+              photo: service.photo,
               order: service.order,
             }}
           />

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (unauth) return unauth;
   try {
     const body = await req.json().catch(() => null);
-    const { title, blurb, icon, points, order } = body ?? {};
+    const { title, blurb, icon, points, photo, order } = body ?? {};
 
     if (typeof title !== "string" || !title.trim()) {
       return NextResponse.json(
@@ -65,6 +65,7 @@ export async function POST(req: NextRequest) {
         blurb: blurb.trim(),
         icon: typeof icon === "string" ? icon.trim() : "Hammer",
         points: JSON.stringify(pointsArr),
+        photo: typeof photo === "string" && photo.trim() ? photo.trim() : null,
         order: Number.isFinite(order) ? Number(order) : 0,
       },
     });

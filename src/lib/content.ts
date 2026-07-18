@@ -6,6 +6,7 @@ export type ServiceData = {
   blurb: string;
   icon: string;
   points: string[];
+  photo: string | null;
   order: number;
 };
 
@@ -44,6 +45,7 @@ export async function getServices(): Promise<ServiceData[]> {
     blurb: r.blurb,
     icon: r.icon,
     points: safeParse(r.points, []),
+    photo: r.photo,
     order: r.order,
   }));
 }

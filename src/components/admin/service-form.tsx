@@ -4,12 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { SubmitButton, useFormSubmit } from "@/components/admin/submit-button";
+import { MediaPicker } from "@/components/admin/media-picker";
 
 type Initial = {
   id?: string;
@@ -17,6 +18,7 @@ type Initial = {
   blurb?: string;
   icon?: string;
   points?: string[];
+  photo?: string | null;
   order?: number;
 };
 
@@ -32,6 +34,7 @@ export function ServiceForm({ initial }: { initial?: Initial }) {
     Array.isArray(initial?.points) ? (initial!.points as string[]).join("\n") : ""
   );
   const [order, setOrder] = useState(String(initial?.order ?? 0));
+  const [photo, setPhoto] = useState(initial?.photo ?? "");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,6 +43,7 @@ export function ServiceForm({ initial }: { initial?: Initial }) {
       blurb,
       icon,
       points,
+      photo: photo || null,
       order: Number(order) || 0,
     };
 
@@ -106,6 +110,47 @@ export function ServiceForm({ initial }: { initial?: Initial }) {
             placeholder="Short description shown under the service title."
             rows={3}
           />
+        </div>
+
+        {/* Service photo (optional) */}
+        <div className="space-y-2">
+          <Label>Service photo (optional)</Label>
+          <p className="text-xs text-[#999999] -mt-1">
+            Shown on the public site above the service description. Upload via the Media Library first.
+          </p>
+          {photo ? (
+            <div className="border border-[#DDDDDD] bg-[#F9FAFB] p-3">
+              <div className="flex items-center gap-3">
+                <img src={photo} alt="Service photo" className="h-16 w-24 object-cover" />
+                <p className="text-xs text-[#999999] truncate flex-1">{photo}</p>
+                <button
+                  type="button"
+                  onClick={() => setPhoto("")}
+                  className="inline-flex h-8 w-8 items-center justify-center text-[#999999] hover:text-[#D2151E]"
+                  aria-label="Remove photo"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-2">
+              <MediaPicker
+                filterType="image"
+                label="Choose from library"
+                onSelect={(m) => setPhoto(m.url)}
+              />
+              <span className="text-xs text-[#999999]">or paste a URL:</span>
+              <div className="flex-1 min-w-[200px]">
+                <Input
+                  value={photo}
+                  onChange={(e) => setPhoto(e.target.value)}
+                  placeholder="https://…"
+                  className="h-9"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">

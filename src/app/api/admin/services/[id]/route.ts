@@ -37,7 +37,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await req.json().catch(() => null);
-    const { title, blurb, icon, points, order } = body ?? {};
+    const { title, blurb, icon, points, photo, order } = body ?? {};
 
     const existing = await db.service.findUnique({ where: { id } });
     if (!existing) {
@@ -52,6 +52,7 @@ export async function PUT(
     if (typeof blurb === "string" && blurb.trim()) data.blurb = blurb.trim();
     if (typeof icon === "string") data.icon = icon.trim();
     if (body && "points" in body) data.points = JSON.stringify(parsePoints(points));
+    if (typeof photo === "string") data.photo = photo.trim() || null;
     if (order !== undefined && Number.isFinite(Number(order)))
       data.order = Number(order);
 

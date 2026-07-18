@@ -5,21 +5,25 @@ import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X, Phone, Hammer, ArrowRight } from "lucide-react";
 import { SITE } from "@/lib/site-data";
+import { useLanguage } from "@/components/site/language-provider";
+import { LanguageToggle } from "@/components/site/language-toggle";
+import type { TranslationKey } from "@/lib/i18n";
 
-const NAV_LINKS = [
-  { href: "#services", label: "Services" },
-  { href: "#projects", label: "Projects" },
-  { href: "#about", label: "About" },
-  { href: "#why-us", label: "Why Us" },
-  { href: "#reviews", label: "Reviews" },
-  { href: "#faq", label: "FAQ" },
-  { href: "#contact", label: "Contact" },
+const NAV_LINKS: { href: string; key: TranslationKey }[] = [
+  { href: "#services", key: "nav.services" },
+  { href: "#projects", key: "nav.projects" },
+  { href: "#about", key: "nav.about" },
+  { href: "#why-us", key: "nav.whyUs" },
+  { href: "#reviews", key: "nav.reviews" },
+  { href: "#faq", key: "nav.faq" },
+  { href: "#contact", key: "nav.contact" },
 ];
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
+  const { t } = useLanguage();
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     setScrolled(latest > 40);
@@ -81,7 +85,7 @@ export function SiteHeader() {
                 href={link.href}
                 className="group relative text-[15px] font-medium text-[#333333] transition-colors hover:text-[#121117]"
               >
-                {link.label}
+                {t(link.key)}
                 <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-[#D2151E] transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
@@ -89,6 +93,7 @@ export function SiteHeader() {
 
           {/* Desktop CTA */}
           <div className="hidden items-center gap-5 lg:flex">
+            <LanguageToggle variant="light" />
             <a
               href={SITE.phoneHref}
               className="flex items-center gap-2 text-[14px] font-semibold text-[#121117] transition-colors hover:text-[#D2151E]"
@@ -103,7 +108,7 @@ export function SiteHeader() {
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
               className="inline-flex h-11 items-center gap-1.5 bg-[#D2151E] px-6 text-[14px] font-semibold text-white transition-colors hover:bg-[#B01118]"
             >
-              Get a Free Quote
+              {t("nav.getQuote")}
               <ArrowRight className="h-4 w-4" />
             </motion.a>
           </div>
@@ -164,17 +169,20 @@ export function SiteHeader() {
                       onClick={() => setOpen(false)}
                       className="flex h-12 items-center text-[16px] font-medium text-[#333333] hover:text-[#D2151E]"
                     >
-                      {link.label}
+                      {t(link.key)}
                     </Link>
                   </motion.div>
                 ))}
-                <div className="mt-3 flex flex-col gap-3 border-t border-[#DDDDDD] pt-4">
+                <div className="mt-3 flex items-center justify-between border-t border-[#DDDDDD] pt-4">
+                  <LanguageToggle variant="light" />
+                </div>
+                <div className="mt-3 flex flex-col gap-3">
                   <a href={SITE.phoneHref} className="flex h-12 items-center justify-center gap-2 border border-[#121117] text-[15px] font-semibold text-[#121117]">
                     <Phone className="h-4 w-4" />
                     {SITE.phone}
                   </a>
                   <a href="#contact" onClick={() => setOpen(false)} className="flex h-12 items-center justify-center bg-[#D2151E] text-[15px] font-semibold text-white">
-                    Get a Free Quote
+                    {t("nav.getQuote")}
                   </a>
                 </div>
               </div>

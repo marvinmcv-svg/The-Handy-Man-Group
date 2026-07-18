@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Public_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { LanguageProvider } from "@/components/site/language-provider";
 
 const publicSans = Public_Sans({
   variable: "--font-public-sans",
@@ -143,7 +144,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
         <Toaster />
         <script
           type="application/ld+json"
