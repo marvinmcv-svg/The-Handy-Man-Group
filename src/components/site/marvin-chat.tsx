@@ -53,7 +53,7 @@ export function MarvinChat() {
   // Close on Escape + restore focus to launcher (accessibility).
   useEffect(() => {
     if (!open) return;
-    function onKey(e: KeyboardEvent) {
+    function onKey(e: globalThis.KeyboardEvent) {
       if (e.key === "Escape") {
         e.preventDefault();
         setOpen(false);

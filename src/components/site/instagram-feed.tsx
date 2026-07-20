@@ -98,7 +98,6 @@ export function InstagramFeed() {
                   title={`Instagram post ${post.shortcode}`}
                   loading="lazy"
                   scrolling="no"
-                  allowtransparency="true"
                   onLoad={() => markLoaded(idx)}
                   className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[400px] origin-center -translate-x-1/2 -translate-y-[42%] scale-[0.34] border-0 sm:scale-[0.5] md:scale-[0.44] lg:scale-[0.38]"
                 />

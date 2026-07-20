@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Hammer } from "lucide-react";
 
 /**
  * Premium page preloader — shows once per session on first page load.
@@ -79,14 +78,14 @@ export function PagePreloader() {
             }}
           />
 
-          {/* Hammer logo — draws in */}
+          {/* HCG logo — draws in */}
           <motion.div
             initial={{ opacity: 0, scale: 0.6, rotate: -25 }}
             animate={{ opacity: 1, scale: 1, rotate: 0 }}
             transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-            className="relative text-[#D2151E]"
+            className="relative"
           >
-            <Hammer className="h-12 w-12" strokeWidth={2.5} />
+            <img src="/ai-media/logo-hcg.png" alt="The Handyman & Carpentry Group" className="h-16 w-16 object-contain" />
             {/* Glow */}
             <div
               aria-hidden="true"

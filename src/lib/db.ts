@@ -18,7 +18,8 @@ if (cached && typeof cached.media === "undefined") {
 
 // Only log Prisma queries in development — production logging is noisy and
 // can leak query details into server logs.
-const logConfig = process.env.NODE_ENV === 'production' ? ['error', 'warn'] : ['query', 'error', 'warn']
+const logConfig: ("query" | "error" | "warn")[] =
+  process.env.NODE_ENV === 'production' ? ['error', 'warn'] : ['query', 'error', 'warn']
 
 export const db =
   globalForPrisma.prisma ??

@@ -10,7 +10,7 @@ export default async function SettingsPage() {
   const settings = await getSettings();
   return (
     <div>
-      <PageHeader title="Site Settings" breadcrumb={[{ label: "Dashboard", href: "/admin" }, { label: "Settings" }]} />
+      <PageHeader title="Site Settings" crumbs={[{ label: "Dashboard", href: "/admin" }, { label: "Settings" }]} />
       <SettingsForm initialSettings={settings as unknown as Record<string, string>} />
     </div>
   );

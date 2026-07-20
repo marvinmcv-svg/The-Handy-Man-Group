@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import { requireAuth } from "@/lib/auth";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { Toaster as SonnerToaster } from "sonner";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminProtectedLayout({
   children,

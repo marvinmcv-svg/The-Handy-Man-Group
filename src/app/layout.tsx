@@ -84,7 +84,7 @@ const localBusinessLd = {
   telephone: "+61730535274",
   email: "info@thehandymangroup.com.au",
   image: `${SITE_URL}/ai-media/hero-carpenter.png`,
-  logo: `${SITE_URL}/logo.svg`,
+  logo: `${SITE_URL}/ai-media/logo-hcg.png`,
   priceRange: "$$",
   foundingDate: "2017",
   foundingLocation: {

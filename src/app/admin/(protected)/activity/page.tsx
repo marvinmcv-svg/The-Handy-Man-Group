@@ -20,7 +20,7 @@ export default async function ActivityPage() {
     <div>
       <PageHeader
         title="Activity Log"
-        breadcrumb={[{ label: "Dashboard", href: "/admin" }, { label: "Activity" }]}
+        crumbs={[{ label: "Dashboard", href: "/admin" }, { label: "Activity" }]}
       />
       <div className="border border-[#DDDDDD] bg-white">
         {activity.length === 0 ? (
