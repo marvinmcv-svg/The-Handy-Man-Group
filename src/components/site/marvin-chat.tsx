@@ -145,7 +145,7 @@ export function MarvinChat() {
         whileTap={{ scale: 0.97 }}
       >
         <motion.span
-          className="relative inline-flex h-9 w-9 items-center justify-center bg-[#25D366]"
+          className="relative inline-flex h-9 w-9 items-center justify-center bg-[#D2151E]"
           animate={{ rotate: open ? 90 : 0 }}
           transition={{ duration: 0.3, ease: EASE }}
         >

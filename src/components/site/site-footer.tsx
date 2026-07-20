@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Phone, Mail, MapPin, Clock, Instagram, Facebook, Hammer, ArrowRight } from "lucide-react";
+import { Phone, Mail, MapPin, Clock, Instagram, Facebook, ArrowRight } from "lucide-react";
 import { SITE } from "@/lib/site-data";
 
 const FOOTER_SERVICES = [
@@ -53,9 +53,7 @@ export function SiteFooter() {
         {/* Brand */}
         <div>
           <Link href="#top" className="flex items-center gap-2.5 text-white" aria-label={`${SITE.name} home`}>
-            <span className="flex h-9 w-9 items-center justify-center bg-[#D2151E] text-white">
-              <Hammer className="h-5 w-5" strokeWidth={2.5} />
-            </span>
+            <img src="/ai-media/logo-hcg.png" alt="The Handyman & Carpentry Group logo" className="h-9 w-9 object-contain" />
             <span className="flex flex-col leading-none">
               <span className="text-[14px] font-bold tracking-tight">Handyman &amp; Carpentry</span>
               <span className="text-[10px] font-medium uppercase tracking-[0.15em] text-white/50">Group · Brisbane</span>

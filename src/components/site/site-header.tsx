@@ -3,20 +3,25 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
-import { Menu, X, Phone, Hammer, ArrowRight } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { SITE } from "@/lib/site-data";
 import { useLanguage } from "@/components/site/language-provider";
 import { LanguageToggle } from "@/components/site/language-toggle";
 import type { TranslationKey } from "@/lib/i18n";
 
+// Reduced to 5 primary links (was 7) — FAQ moved to mobile menu only
 const NAV_LINKS: { href: string; key: TranslationKey }[] = [
   { href: "#services", key: "nav.services" },
   { href: "#projects", key: "nav.projects" },
   { href: "#about", key: "nav.about" },
-  { href: "#why-us", key: "nav.whyUs" },
   { href: "#reviews", key: "nav.reviews" },
-  { href: "#faq", key: "nav.faq" },
   { href: "#contact", key: "nav.contact" },
+];
+
+// Extra links shown only in the mobile menu
+const MOBILE_EXTRA_LINKS: { href: string; key: TranslationKey }[] = [
+  { href: "#why-us", key: "nav.whyUs" },
+  { href: "#faq", key: "nav.faq" },
 ];
 
 export function SiteHeader() {
@@ -37,7 +42,6 @@ export function SiteHeader() {
     };
   }, [open]);
 
-  // Close mobile menu on Escape (accessibility).
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
@@ -58,15 +62,15 @@ export function SiteHeader() {
     >
       <div className="container-drill">
         <div className={`flex items-center justify-between transition-all duration-300 ${scrolled ? "h-14" : "h-16 md:h-20"}`}>
-          {/* Logo */}
-          <Link href="#top" className="flex items-center gap-2.5 text-[#121117]" aria-label={`${SITE.name} home`}>
-            <motion.span
-              whileHover={{ rotate: -12 }}
+          {/* Logo — new HCG logo image */}
+          <Link href="#top" className="flex items-center gap-3 text-[#121117]" aria-label={`${SITE.name} home`}>
+            <motion.img
+              src="/ai-media/logo-hcg.png"
+              alt="The Handyman & Carpentry Group logo"
+              className="h-9 w-9 object-contain md:h-10 md:w-10"
+              whileHover={{ rotate: -8 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
-              className="flex h-9 w-9 items-center justify-center bg-[#D2151E] text-white"
-            >
-              <Hammer className="h-5 w-5" strokeWidth={2.5} />
-            </motion.span>
+            />
             <span className="flex flex-col leading-none">
               <span className="text-[14px] font-bold tracking-tight md:text-[16px]">
                 Handyman &amp; Carpentry
@@ -77,8 +81,8 @@ export function SiteHeader() {
             </span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden items-center gap-7 lg:flex" aria-label="Primary">
+          {/* Desktop nav — 5 links only */}
+          <nav className="hidden items-center gap-8 lg:flex" aria-label="Primary">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
@@ -91,22 +95,15 @@ export function SiteHeader() {
             ))}
           </nav>
 
-          {/* Desktop CTA */}
-          <div className="hidden items-center gap-5 lg:flex">
+          {/* Desktop CTA — language toggle + quote button only (phone removed) */}
+          <div className="hidden items-center gap-4 lg:flex">
             <LanguageToggle variant="light" />
-            <a
-              href={SITE.phoneHref}
-              className="flex items-center gap-2 text-[14px] font-semibold text-[#121117] transition-colors hover:text-[#D2151E]"
-            >
-              <Phone className="h-4 w-4" strokeWidth={2} />
-              {SITE.phone}
-            </a>
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="inline-flex h-11 items-center gap-1.5 bg-[#D2151E] px-6 text-[14px] font-semibold text-white transition-colors hover:bg-[#B01118]"
+              className="inline-flex h-10 items-center gap-1.5 bg-[#D2151E] px-5 text-[14px] font-semibold text-white transition-colors hover:bg-[#B01118]"
             >
               {t("nav.getQuote")}
               <ArrowRight className="h-4 w-4" />
@@ -157,7 +154,7 @@ export function SiteHeader() {
               aria-label="Mobile"
             >
               <div className="container-drill flex flex-col py-4">
-                {NAV_LINKS.map((link, i) => (
+                {[...NAV_LINKS, ...MOBILE_EXTRA_LINKS].map((link, i) => (
                   <motion.div
                     key={link.href}
                     initial={{ opacity: 0, x: -20 }}
@@ -176,11 +173,7 @@ export function SiteHeader() {
                 <div className="mt-3 flex items-center justify-between border-t border-[#DDDDDD] pt-4">
                   <LanguageToggle variant="light" />
                 </div>
-                <div className="mt-3 flex flex-col gap-3">
-                  <a href={SITE.phoneHref} className="flex h-12 items-center justify-center gap-2 border border-[#121117] text-[15px] font-semibold text-[#121117]">
-                    <Phone className="h-4 w-4" />
-                    {SITE.phone}
-                  </a>
+                <div className="mt-3">
                   <a href="#contact" onClick={() => setOpen(false)} className="flex h-12 items-center justify-center bg-[#D2151E] text-[15px] font-semibold text-white">
                     {t("nav.getQuote")}
                   </a>
