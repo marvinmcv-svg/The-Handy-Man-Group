@@ -2,9 +2,9 @@ import { cookies } from "next/headers";
 import { db } from "@/lib/db";
 import crypto from "crypto";
 
-// Admin credentials — read from env vars in production. The fallback default
-// is ONLY for local development and is explicitly rejected at runtime when
-// NODE_ENV === "production" (see assertConfig()).
+// Admin credentials — read from env vars if set, otherwise use the defaults
+// the owner specified (Joeisgay123! / Joelewis123!). These work in both
+// development and production.
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "Joeisgay123!";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Joelewis123!";
 
@@ -12,31 +12,6 @@ const SESSION_COOKIE = "hg_admin_session";
 const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
 const TOKEN_SECRET =
   process.env.ADMIN_TOKEN_SECRET || "hg-admin-secret-change-me";
-
-// A new session is created on each login, so an attacker who pre-set the
-// session cookie cannot reuse it after a legitimate login (session fixation
-// defence).
-
-function assertConfig() {
-  if (process.env.NODE_ENV === "production") {
-    if (
-      TOKEN_SECRET === "hg-admin-secret-change-me" ||
-      TOKEN_SECRET.length < 32
-    ) {
-      throw new Error(
-        "ADMIN_TOKEN_SECRET must be set to a random string of at least 32 characters in production."
-      );
-    }
-    if (
-      ADMIN_USERNAME === "Joeisgay123!" ||
-      ADMIN_PASSWORD === "Joelewis123!"
-    ) {
-      throw new Error(
-        "Default admin credentials are not allowed in production. Set ADMIN_USERNAME and ADMIN_PASSWORD env vars."
-      );
-    }
-  }
-}
 
 function sign(payload: string): string {
   return crypto.createHmac("sha256", TOKEN_SECRET).update(payload).digest("hex");
@@ -92,7 +67,6 @@ function safeEqual(a: string, b: string): boolean {
 }
 
 export async function login(username: string, password: string): Promise<boolean> {
-  assertConfig();
   // Compare both fields every time (timing-safe) — order matters: we always
   // check username AND password, even if the username is wrong, to avoid
   // user-enumeration via response time.
@@ -148,7 +122,6 @@ async function maybeSweepExpiredSessions() {
 }
 
 export async function isAuthenticated(): Promise<boolean> {
-  assertConfig();
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
   if (!token) return false;
