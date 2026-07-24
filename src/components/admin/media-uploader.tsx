@@ -64,11 +64,25 @@ export function MediaUploader({
         )
       );
       try {
-        const fd = new FormData();
-        fd.append("file", item.file);
+        // Convert file to base64 and send as JSON — the Z.ai Code platform
+        // gateway doesn't forward multipart/form-data requests, so we use
+        // JSON with base64-encoded file data instead.
+        const reader = new FileReader();
+        const base64Promise = new Promise<string>((resolve, reject) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = () => reject(new Error("Failed to read file"));
+          reader.readAsDataURL(item.file);
+        });
+        const fileData = await base64Promise;
+
         const res = await fetch("/api/admin/upload", {
           method: "POST",
-          body: fd,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fileName: item.file.name,
+            fileData: fileData,
+            mimeType: item.file.type,
+          }),
         });
         const data = await res.json().catch(() => null);
         if (!res.ok || !data?.ok) {
