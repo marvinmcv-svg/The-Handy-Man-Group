@@ -169,19 +169,14 @@ export async function POST(req: NextRequest) {
     const filename = `${id}-${safeName}.${ext}`;
     const filePath = path.join(UPLOAD_DIR, filename);
 
-    // Try to write to disk, but always store in DB as fallback
-    let diskWriteOk = false;
+    // Try to write to disk (best effort), but ALWAYS use DB-served URL
+    // because the disk write may succeed momentarily but the file can
+    // disappear on the Z.ai Code platform.
     try {
       await fs.writeFile(filePath, fileBuffer);
-      // Verify it actually wrote
-      const stat = await fs.stat(filePath);
-      diskWriteOk = stat.size > 0;
     } catch (e) {
       console.error("[media upload] disk write failed:", e);
     }
-
-    // Use disk URL if write succeeded, otherwise use DB-served URL
-    const url = diskWriteOk ? `/uploads/${filename}` : `/api/media-file/pending`;
 
     let width: number | null = null;
     let height: number | null = null;
@@ -195,7 +190,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Store file data in DB as base64 (fallback if disk write fails)
+    // Always store file data in DB as base64
     const base64FileData = fileBuffer.toString("base64");
 
     const media = await db.media.create({
@@ -204,7 +199,7 @@ export async function POST(req: NextRequest) {
         originalName: fileName,
         mimeType: mimeType || (isImage ? `image/${ext}` : `video/${ext}`),
         size: fileSize,
-        url: diskWriteOk ? `/uploads/${filename}` : `/api/media-file/temp`,
+        url: `/api/media-file/temp`, // Will be updated below
         type: isImage ? "image" : "video",
         width,
         height,
@@ -212,20 +207,18 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Now update the URL to use the media ID for DB-served files
-    if (!diskWriteOk) {
-      await db.media.update({
-        where: { id: media.id },
-        data: { url: `/api/media-file/${media.id}` },
-      });
-      media.url = `/api/media-file/${media.id}`;
-    }
+    // Always use DB-served URL — this guarantees the file is accessible
+    await db.media.update({
+      where: { id: media.id },
+      data: { url: `/api/media-file/${media.id}` },
+    });
+    media.url = `/api/media-file/${media.id}`;
 
     await logActivity(
       "create",
       "media",
       media.id,
-      `Uploaded ${fileName} (${(fileSize / 1024).toFixed(0)}KB) ${diskWriteOk ? "(disk)" : "(DB)"}`
+      `Uploaded ${fileName} (${(fileSize / 1024).toFixed(0)}KB)`
     );
 
     return NextResponse.json({
