@@ -193,26 +193,24 @@ export async function POST(req: NextRequest) {
     // Always store file data in DB as base64
     const base64FileData = fileBuffer.toString("base64");
 
+    // Use a data URI as the URL — this works everywhere (img src, video src)
+    // without needing a file-serving route. The gateway can't block data URIs.
+    const mimeTypeFinal = mimeType || (isImage ? `image/${ext}` : `video/${ext}`);
+    const dataUri = `data:${mimeTypeFinal};base64,${base64FileData}`;
+
     const media = await db.media.create({
       data: {
         filename,
         originalName: fileName,
-        mimeType: mimeType || (isImage ? `image/${ext}` : `video/${ext}`),
+        mimeType: mimeTypeFinal,
         size: fileSize,
-        url: `/api/media-file/temp`, // Will be updated below
+        url: dataUri,
         type: isImage ? "image" : "video",
         width,
         height,
         fileData: base64FileData,
       },
     });
-
-    // Always use DB-served URL — this guarantees the file is accessible
-    await db.media.update({
-      where: { id: media.id },
-      data: { url: `/api/admin/media/${media.id}` },
-    });
-    media.url = `/api/admin/media/${media.id}`;
 
     await logActivity(
       "create",
