@@ -1,3 +1,4 @@
+// Force rebuild: fix media uploads
 import type { NextConfig } from "next";
 
 /**
