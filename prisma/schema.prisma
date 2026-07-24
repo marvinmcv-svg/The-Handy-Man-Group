@@ -98,10 +98,11 @@ model Media {
   originalName  String   // original upload name
   mimeType      String
   size          Int      // bytes
-  url           String   // /uploads/xxx.jpg
+  url           String   // /uploads/xxx.jpg or /api/media-file/[id]
   type          String   // "image" | "video"
   width         Int?
   height        Int?
+  fileData      String?  // base64-encoded file content (fallback if disk write fails)
   createdAt     DateTime @default(now())
 
   @@index([type])

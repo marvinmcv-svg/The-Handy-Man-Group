@@ -168,9 +168,20 @@ export async function POST(req: NextRequest) {
     const safeName = slugify(fileName.replace(/\.[^.]+$/, ""));
     const filename = `${id}-${safeName}.${ext}`;
     const filePath = path.join(UPLOAD_DIR, filename);
-    const url = `/uploads/${filename}`;
 
-    await fs.writeFile(filePath, fileBuffer);
+    // Try to write to disk, but always store in DB as fallback
+    let diskWriteOk = false;
+    try {
+      await fs.writeFile(filePath, fileBuffer);
+      // Verify it actually wrote
+      const stat = await fs.stat(filePath);
+      diskWriteOk = stat.size > 0;
+    } catch (e) {
+      console.error("[media upload] disk write failed:", e);
+    }
+
+    // Use disk URL if write succeeded, otherwise use DB-served URL
+    const url = diskWriteOk ? `/uploads/${filename}` : `/api/media-file/pending`;
 
     let width: number | null = null;
     let height: number | null = null;
@@ -184,24 +195,37 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Store file data in DB as base64 (fallback if disk write fails)
+    const base64FileData = fileBuffer.toString("base64");
+
     const media = await db.media.create({
       data: {
         filename,
         originalName: fileName,
         mimeType: mimeType || (isImage ? `image/${ext}` : `video/${ext}`),
         size: fileSize,
-        url,
+        url: diskWriteOk ? `/uploads/${filename}` : `/api/media-file/temp`,
         type: isImage ? "image" : "video",
         width,
         height,
+        fileData: base64FileData,
       },
     });
+
+    // Now update the URL to use the media ID for DB-served files
+    if (!diskWriteOk) {
+      await db.media.update({
+        where: { id: media.id },
+        data: { url: `/api/media-file/${media.id}` },
+      });
+      media.url = `/api/media-file/${media.id}`;
+    }
 
     await logActivity(
       "create",
       "media",
       media.id,
-      `Uploaded ${fileName} (${(fileSize / 1024).toFixed(0)}KB)`
+      `Uploaded ${fileName} (${(fileSize / 1024).toFixed(0)}KB) ${diskWriteOk ? "(disk)" : "(DB)"}`
     );
 
     return NextResponse.json({
