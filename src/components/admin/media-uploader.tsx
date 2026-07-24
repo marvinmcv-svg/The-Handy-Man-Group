@@ -75,7 +75,7 @@ export function MediaUploader({
         });
         const fileData = await base64Promise;
 
-        const res = await fetch("/api/admin/upload", {
+        const res = await fetch("/api/admin/media", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
