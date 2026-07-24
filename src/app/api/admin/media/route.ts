@@ -210,9 +210,9 @@ export async function POST(req: NextRequest) {
     // Always use DB-served URL — this guarantees the file is accessible
     await db.media.update({
       where: { id: media.id },
-      data: { url: `/api/media-file/${media.id}` },
+      data: { url: `/api/admin/media/${media.id}` },
     });
-    media.url = `/api/media-file/${media.id}`;
+    media.url = `/api/admin/media/${media.id}`;
 
     await logActivity(
       "create",

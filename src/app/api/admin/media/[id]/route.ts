@@ -6,8 +6,39 @@ import { isAuthenticated } from "@/lib/auth";
 import { logActivity } from "@/lib/activity";
 
 export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads");
+
+// GET — serves the file content directly from the DB (fileData column).
+// This is PUBLIC (no auth) so images/videos can be displayed on the public site.
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const media = await db.media.findUnique({ where: { id } });
+
+    if (!media || !media.fileData) {
+      return new NextResponse("File not found", { status: 404 });
+    }
+
+    const buffer = Buffer.from(media.fileData, "base64");
+
+    return new NextResponse(buffer, {
+      status: 200,
+      headers: {
+        "Content-Type": media.mimeType,
+        "Content-Length": String(media.size),
+        "Cache-Control": "public, max-age=31536000, immutable",
+      },
+    });
+  } catch (err) {
+    console.error("[media-file GET] error:", err);
+    return new NextResponse("Internal error", { status: 500 });
+  }
+}
 
 export async function DELETE(
   _req: NextRequest,
