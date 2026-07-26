@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { Loader2, ImageIcon, Film, X, Check } from "lucide-react";
+import { useCallback, useEffect, useState, useRef } from "react";
+import { Loader2, ImageIcon, Film, X, Check, UploadCloud } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -52,6 +52,46 @@ export function MediaPicker({
     filterType ?? "all"
   );
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  async function handleUpload(file: File) {
+    setUploading(true);
+    try {
+      const reader = new FileReader();
+      const base64Promise = new Promise<string>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
+      });
+      const fileData = await base64Promise;
+
+      const res = await fetch("/api/admin/media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fileName: file.name,
+          fileData: fileData,
+          mimeType: file.type,
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.ok) {
+        throw new Error(data?.error || "Upload failed");
+      }
+      toast.success(`Uploaded ${file.name}`);
+      // Refresh the media list
+      fetchMedia();
+      // Auto-select the newly uploaded item
+      if (data.media?.id) {
+        setSelectedId(data.media.id);
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }
 
   const fetchMedia = useCallback(async () => {
     setLoading(true);
@@ -152,6 +192,41 @@ export function MediaPicker({
             ))}
           </div>
         )}
+
+        {/* Upload button — upload directly without leaving the picker */}
+        <div className="border-b border-[#DDDDDD] px-5 py-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            accept={filterType === "video" ? "video/mp4,video/webm,video/quicktime" : "image/jpeg,image/png,image/webp,image/gif"}
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleUpload(file);
+              e.target.value = "";
+            }}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-1.5 border-[#DDDDDD]"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {uploading ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Uploading…
+              </>
+            ) : (
+              <>
+                <UploadCloud className="h-3.5 w-3.5" />
+                Upload new {filterType === "video" ? "video" : "image"}
+              </>
+            )}
+          </Button>
+        </div>
 
         {/* Grid */}
         <div className="max-h-[60vh] overflow-y-auto px-5 py-4">
