@@ -12,7 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
  * - Uses sessionStorage to skip on subsequent navigations
  */
 const STORAGE_KEY = "hg_preloader_seen";
-const DURATION = 1900; // ms before exit begins
+const DURATION = 1200; // ms before exit begins — shortened to reduce scroll lock
 
 export function PagePreloader() {
   // Default visible=true so the SSR HTML includes the preloader overlay on the
@@ -50,10 +50,12 @@ export function PagePreloader() {
   // Lock body scroll while the preloader is visible.
   useEffect(() => {
     if (!visible) return;
-    const original = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Restore immediately when visible becomes false — don't wait for
+    // AnimatePresence exit animation to complete, as that can take 850ms
+    // and makes the page feel frozen/unscrollable.
     return () => {
-      document.body.style.overflow = original;
+      document.body.style.overflow = "";
     };
   }, [visible]);
 

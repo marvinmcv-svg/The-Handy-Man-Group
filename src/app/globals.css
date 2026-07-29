@@ -114,13 +114,13 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "ss01", "cv01";
-    /* Prevent pull-to-refresh on mobile (Android Chrome) and overscroll glow */
-    overscroll-behavior: none;
     /* Prevent text inflation / auto-zoom on orientation change (Safari iOS) */
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    /* Allow horizontal content to clip rather than cause scroll */
-    overflow-x: hidden;
+    /* Allow horizontal content to clip rather than cause scroll, but
+       keep vertical scroll working for trackpads and mouse wheels */
+    overflow-x: clip;
+    overflow-y: auto;
   }
   html {
     scroll-behavior: smooth;
@@ -128,7 +128,8 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     /* Prevent horizontal scroll at narrow viewports */
-    overflow-x: hidden;
+    overflow-x: clip;
+    overflow-y: auto;
   }
   /* All inputs / selects / textareas: 16px minimum to prevent iOS auto-zoom on focus */
   input,

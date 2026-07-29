@@ -273,7 +273,7 @@ export function useGsapParallax<T extends AnyEl = HTMLDivElement>(
             trigger: el,
             start,
             end,
-            scrub: 0.5,
+            scrub: true,
           },
         }
       );
