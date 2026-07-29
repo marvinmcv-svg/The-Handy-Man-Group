@@ -1,17 +1,93 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useRef, useEffect } from "react";
+import { useReducedMotion } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { PROCESS } from "@/lib/site-data";
-import { Reveal } from "@/components/site/motion-primitives";
+import { useGsapReveal, useGsapStagger, useGsapCounter } from "@/components/site/gsap-utils";
 import { useLanguage } from "@/components/site/language-provider";
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+// Register ScrollTrigger once (idempotent)
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export function Process() {
   const { t } = useLanguage();
+  const reduce = useReducedMotion();
+
   const sectionRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(sectionRef, { once: true, margin: "-120px" });
+  const headerRef = useRef<HTMLDivElement>(null);
+  const stepsContainerRef = useRef<HTMLDivElement>(null);
+  const mobileStepsRef = useRef<HTMLDivElement>(null);
+  const desktopLineRef = useRef<SVGPathElement>(null);
+  const mobileLineRef = useRef<HTMLDivElement>(null);
+
+  // Header scroll-reveal
+  useGsapReveal(headerRef, { delay: 0, y: 28 });
+
+  // Stagger the step cards as the section scrolls in (desktop grid)
+  useGsapStagger(stepsContainerRef, ".process-step", { stagger: 0.18, y: 28 });
+  // Stagger mobile steps too (they're in a separate container)
+  useGsapStagger(mobileStepsRef, ".process-step", { stagger: 0.12, y: 20 });
+
+  // Timeline line draw-in (stroke-dashoffset 100 → 0 on desktop, scaleY 0 → 1 on mobile).
+  // Plus pulsing dots (infinite yoyo). Respects prefers-reduced-motion.
+  useEffect(() => {
+    if (reduce) return;
+    const ctx = gsap.context(() => {
+      // Desktop SVG path: animate stroke-dashoffset 100 → 0 for the draw-in effect.
+      // (stroke-dasharray is set inline to "100 100" so the dash repeats cleanly.)
+      if (desktopLineRef.current) {
+        gsap.fromTo(
+          desktopLineRef.current,
+          { strokeDashoffset: 100 },
+          {
+            strokeDashoffset: 0,
+            duration: 1.6,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 75%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+      // Mobile bar: scaleY 0 → 1
+      if (mobileLineRef.current) {
+        gsap.fromTo(
+          mobileLineRef.current,
+          { scaleY: 0 },
+          {
+            scaleY: 1,
+            duration: 1.4,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top 75%",
+              toggleActions: "play none none none",
+            },
+          }
+        );
+      }
+
+      // Pulsing dots — infinite yoyo scale + opacity (the dot "breathes")
+      gsap.utils.toArray<HTMLElement>(".process-dot").forEach((dot) => {
+        gsap.to(dot, {
+          scale: 1.5,
+          opacity: 0.4,
+          duration: 1.2,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          transformOrigin: "center",
+        });
+      });
+    }, sectionRef);
+    return () => ctx.revert();
+  }, [reduce]);
 
   return (
     <section
@@ -34,7 +110,7 @@ export function Process() {
 
       <div className="container-drill relative">
         {/* Header */}
-        <Reveal className="max-w-3xl">
+        <div ref={headerRef} className="max-w-3xl">
           <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#D2151E]">
             {t("process.eyebrow")}
           </span>
@@ -47,14 +123,14 @@ export function Process() {
           <p className="mt-5 max-w-2xl text-[16px] font-normal leading-[1.6] text-white/70 md:text-[17px]">
             {t("process.subtitle")}
           </p>
-        </Reveal>
+        </div>
 
         {/* Desktop: horizontal timeline */}
         <div
           ref={sectionRef}
           className="relative mt-16 hidden md:block lg:mt-24"
         >
-          {/* SVG horizontal line — animates pathLength on scroll-in */}
+          {/* SVG horizontal line — animates stroke-dashoffset on scroll-in */}
           <svg
             className="absolute left-[12.5%] right-[12.5%] top-[7px] h-[2px] w-[75%] overflow-visible"
             preserveAspectRatio="none"
@@ -72,36 +148,28 @@ export function Process() {
               vectorEffect="non-scaling-stroke"
             />
             {/* Animated fill */}
-            <motion.path
+            <path
+              ref={desktopLineRef}
               d="M 0 1 L 100 1"
               stroke="#D2151E"
               strokeWidth="2"
               fill="none"
               vectorEffect="non-scaling-stroke"
-              initial={{ pathLength: 0 }}
-              animate={inView ? { pathLength: 1 } : { pathLength: 0 }}
-              transition={{ duration: 1.8, ease: EASE }}
+              pathLength={100}
+              style={{ strokeDasharray: "100 100", strokeDashoffset: 100 }}
             />
           </svg>
 
-          <div className="grid grid-cols-4 gap-4 lg:gap-8">
+          <div ref={stepsContainerRef} className="grid grid-cols-4 gap-4 lg:gap-8">
             {PROCESS.map((step, i) => (
-              <motion.div
+              <div
                 key={step.step}
-                initial={{ opacity: 0, y: 24 }}
-                animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
-                transition={{ duration: 0.7, delay: 0.4 + i * 0.18, ease: EASE }}
-                className="group relative flex flex-col items-center text-center"
+                className="process-step group relative flex flex-col items-center text-center"
               >
-                {/* Pulsing red dot on the line */}
-                <div className="relative mb-8 flex h-4 w-4 items-center justify-center">
-                  <span className="relative z-10 h-4 w-4 bg-[#D2151E]" />
-                  <span className="absolute inset-0 z-0 animate-ping rounded-full bg-[#D2151E] opacity-40" aria-hidden />
-                </div>
-                {/* Number */}
-                <span className="text-[60px] font-bold leading-none tracking-tight text-[#D2151E] transition-colors duration-300 group-hover:text-white lg:text-[72px]">
-                  {step.step}
-                </span>
+                {/* Pulsing red dot on the line — .process-dot is GSAP yoyo target */}
+                <div className="process-dot relative mb-8 flex h-4 w-4 items-center justify-center bg-[#D2151E]" aria-hidden />
+                {/* Number — useGsapCounter counts from 0 → step number on scroll-in */}
+                <ProcessCounter value={step.step} delay={0.4 + i * 0.18} className="text-[60px] font-bold leading-none tracking-tight text-[#D2151E] transition-colors duration-300 group-hover:text-white lg:text-[72px]" />
                 {/* Title */}
                 <h3 className="mt-4 text-[20px] font-bold leading-snug text-white lg:text-[22px]">
                   {step.title}
@@ -110,46 +178,35 @@ export function Process() {
                 <p className="mt-3 max-w-xs text-[15px] font-normal leading-[1.6] text-white/60">
                   {step.body}
                 </p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
 
         {/* Mobile: vertical timeline */}
         <div className="mt-14 md:hidden">
-          <div className="relative pl-12">
+          <div ref={mobileStepsRef} className="relative pl-12">
             {/* Vertical line track */}
             <div className="absolute left-[14px] top-1 bottom-1 w-[2px] bg-[#2A2A35]" aria-hidden />
-            {/* Animated fill */}
-            <motion.div
+            {/* Animated fill — GSAP scaleY from 0 → 1 */}
+            <div
+              ref={mobileLineRef}
               className="absolute left-[14px] top-1 bottom-1 w-[2px] origin-top bg-[#D2151E]"
-              initial={{ scaleY: 0 }}
-              whileInView={{ scaleY: 1 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 1.4, ease: EASE }}
+              style={{ transform: "scaleY(0)" }}
               aria-hidden
             />
             <div className="flex flex-col gap-10">
               {PROCESS.map((step, i) => (
-                <motion.div
+                <div
                   key={step.step}
-                  initial={{ opacity: 0, x: -16 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true, margin: "-40px" }}
-                  transition={{ duration: 0.6, delay: i * 0.12, ease: EASE }}
-                  className="relative"
+                  className="process-step relative"
                 >
                   {/* Pulsing dot */}
-                  <span className="absolute -left-[34px] top-2 flex h-4 w-4 items-center justify-center">
-                    <span className="relative z-10 h-4 w-4 bg-[#D2151E]" />
-                    <span className="absolute inset-0 z-0 animate-ping rounded-full bg-[#D2151E] opacity-40" aria-hidden />
-                  </span>
-                  <span className="text-[44px] font-bold leading-none tracking-tight text-[#D2151E]">
-                    {step.step}
-                  </span>
+                  <span className="process-dot absolute -left-[34px] top-2 flex h-4 w-4 items-center justify-center bg-[#D2151E]" aria-hidden />
+                  <ProcessCounter value={step.step} delay={i * 0.12} className="text-[44px] font-bold leading-none tracking-tight text-[#D2151E]" />
                   <h3 className="mt-3 text-[20px] font-bold leading-snug text-white">{step.title}</h3>
                   <p className="mt-2 text-[15px] font-normal leading-[1.6] text-white/65">{step.body}</p>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
@@ -157,4 +214,21 @@ export function Process() {
       </div>
     </section>
   );
+}
+
+/* ---------- Process step counter (uses useGsapCounter hook) ---------- */
+function ProcessCounter({
+  value,
+  delay,
+  className,
+}: {
+  value: number;
+  delay: number;
+  className?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  // useGsapCounter counts from 0 → value when the ref scrolls into view.
+  // `delay` is passed through so each step's counter is staggered.
+  useGsapCounter(ref, value, { duration: 1.4, delay });
+  return <span ref={ref} className={className}>0</span>;
 }

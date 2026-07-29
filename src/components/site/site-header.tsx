@@ -62,17 +62,18 @@ export function SiteHeader() {
     >
       <div className="container-drill">
         <div className={`flex items-center justify-between transition-all duration-300 ${scrolled ? "h-14" : "h-16 md:h-20"}`}>
-          {/* Logo — new HCG logo image */}
-          <Link href="#top" className="flex items-center gap-3 text-[#121117]" aria-label={`${SITE.name} home`}>
+          {/* Logo — new HCG logo image. Logo-shrink class scales it down on <380px viewports */}
+          <Link href="#top" className="logo-shrink no-tap-highlight flex min-w-0 items-center gap-2.5 text-[#121117] sm:gap-3" aria-label={`${SITE.name} home`}>
             <motion.img
               src="/ai-media/logo-hcg.png"
               alt="The Handyman & Carpentry Group logo"
-              className="h-9 w-9 object-contain md:h-10 md:w-10"
+              className="h-9 w-9 shrink-0 object-contain md:h-10 md:w-10"
               whileHover={{ rotate: -8 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
             />
-            <span className="flex flex-col leading-none">
-              <span className="text-[14px] font-bold tracking-tight md:text-[16px]">
+            <span className="flex min-w-0 flex-col leading-none">
+              {/* Truncate brand text on very small screens to prevent overflow */}
+              <span className="truncate text-[13px] font-bold tracking-tight sm:text-[14px] md:text-[16px]">
                 Handyman &amp; Carpentry
               </span>
               <span className="hidden text-[10px] font-medium uppercase tracking-[0.15em] text-[#999999] sm:block">
@@ -110,11 +111,11 @@ export function SiteHeader() {
             </motion.a>
           </div>
 
-          {/* Mobile toggle */}
+          {/* Mobile toggle — 44x44 touch target (Apple HIG minimum) */}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
-            className="relative inline-flex h-11 w-11 items-center justify-center text-[#121117] lg:hidden"
+            className="no-tap-highlight relative inline-flex h-11 w-11 shrink-0 items-center justify-center text-[#121117] lg:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
           >
@@ -133,7 +134,7 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — full-width, smooth slide-down with staggered items */}
       <AnimatePresence>
         {open && (
           <>
@@ -150,31 +151,32 @@ export function SiteHeader() {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="overflow-hidden border-t border-[#DDDDDD] bg-white lg:hidden"
+              className="safe-bottom fixed inset-x-0 top-14 z-50 max-h-[calc(100svh-3.5rem)] overflow-y-auto overflow-x-hidden border-t border-[#DDDDDD] bg-white lg:hidden"
               aria-label="Mobile"
             >
-              <div className="container-drill flex flex-col py-4">
+              <div className="container-drill flex flex-col py-2">
                 {[...NAV_LINKS, ...MOBILE_EXTRA_LINKS].map((link, i) => (
                   <motion.div
                     key={link.href}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.05 + i * 0.04 }}
+                    transition={{ delay: 0.04 + i * 0.04, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className="flex h-12 items-center text-[16px] font-medium text-[#333333] hover:text-[#D2151E]"
+                      className="no-tap-highlight flex min-h-[44px] items-center py-3 text-[16px] font-medium text-[#333333] hover:text-[#D2151E]"
                     >
                       {t(link.key)}
                     </Link>
                   </motion.div>
                 ))}
-                <div className="mt-3 flex items-center justify-between border-t border-[#DDDDDD] pt-4">
+                <div className="mobile-lang-touch mt-3 flex items-center justify-between border-t border-[#DDDDDD] pt-4">
+                  {/* Language toggle is touch-friendly: buttons are 44px tall on mobile (via .mobile-lang-touch) */}
                   <LanguageToggle variant="light" />
                 </div>
-                <div className="mt-3">
-                  <a href="#contact" onClick={() => setOpen(false)} className="flex h-12 items-center justify-center bg-[#D2151E] text-[15px] font-semibold text-white">
+                <div className="mt-3 pb-4">
+                  <a href="#contact" onClick={() => setOpen(false)} className="no-tap-highlight flex min-h-[44px] items-center justify-center bg-[#D2151E] px-6 py-3 text-[15px] font-semibold text-white">
                     {t("nav.getQuote")}
                   </a>
                 </div>

@@ -114,9 +114,60 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "ss01", "cv01";
+    /* Prevent pull-to-refresh on mobile (Android Chrome) and overscroll glow */
+    overscroll-behavior: none;
+    /* Prevent text inflation / auto-zoom on orientation change (Safari iOS) */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Allow horizontal content to clip rather than cause scroll */
+    overflow-x: hidden;
   }
   html {
     scroll-behavior: smooth;
+    /* iOS: prevent font scaling on orientation change */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Prevent horizontal scroll at narrow viewports */
+    overflow-x: hidden;
+  }
+  /* All inputs / selects / textareas: 16px minimum to prevent iOS auto-zoom on focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+  /* Better touch-tap behavior on interactive elements */
+  button,
+  a,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  label[for] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  /* Make images responsive and never break out of their containers */
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    max-width: 100%;
+    display: block;
+  }
+  /* Prevent long words from causing horizontal overflow on small screens */
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  li,
+  blockquote {
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 }
 
@@ -205,6 +256,97 @@
   .preserve-3d {
     transform-style: preserve-3d;
   }
+
+  /* ---------- MOBILE UTILITIES (H3 — mobile optimization) ---------- */
+
+  /* Minimum touch target — Apple HIG / Material both recommend ≥44px on mobile */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Disable the default grey tap-highlight on iOS/Android */
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Respect device safe-area insets (iPhone notch / home indicator) */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-x {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Hide horizontal scrollbar on touch carousels but keep scrolling */
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Prevent text selection on UI chrome (buttons, icons) but keep it on body copy */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* Clip any content that would cause horizontal overflow on small screens */
+  .clip-x {
+    overflow-x: clip;
+  }
+}
+
+/* ---------- VERY SMALL SCREEN BREAKPOINTS (H3) ----------
+   Tuned for 320–380px viewports (iPhone SE / older Androids). */
+@media (max-width: 380px) {
+  .container-drill {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+  /* Slightly smaller base heading sizes so headlines don't overflow */
+  .text-very-small-h2 {
+    font-size: 32px !important;
+    line-height: 1.05 !important;
+  }
+  /* Shrink logo lockup so it fits with the hamburger + language toggle */
+  .logo-shrink {
+    gap: 0.5rem !important;
+  }
+  .logo-shrink img,
+  .logo-shrink svg {
+    height: 32px !important;
+    width: 32px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .container-drill {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* Make the language toggle's buttons meet the 44px touch target on mobile
+   (the toggle component itself uses h-8 / 32px which is fine on desktop but
+   too small for fingertips). Bumps the inner buttons to 44px tall below lg. */
+@media (max-width: 1023px) {
+  .mobile-lang-touch button {
+    min-height: 44px;
+    min-width: 44px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .mobile-lang-touch {
+    /* The outer container should match the new button height */
+    min-height: 44px;
+  }
 }
 
 /* Custom scrollbar for long lists */
@@ -263,5 +405,22 @@ html {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- MOBILE MOTION REDUCTION (H3) ----------
+   On very small screens, dial back heavy GPU effects for smoother UX. */
+@media (max-width: 640px) {
+  /* Disable backdrop-filter blur for performance on low-end mobiles */
+  .glass,
+  [class*="backdrop-blur"],
+  [style*="backdrop-filter"] {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  /* Cap scale transforms to avoid huge repaints */
+  [class*="scale-"] {
+    will-change: auto !important;
   }
 }

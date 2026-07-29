@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { gsap } from "gsap";
 import { Quote, Star, Play, X, Video, ChevronLeft, ChevronRight } from "lucide-react";
-import { Reveal } from "@/components/site/motion-primitives";
+import { useGsapReveal } from "@/components/site/gsap-utils";
 import { useLanguage } from "@/components/site/language-provider";
 
 export type TestimonialItem = {
@@ -16,16 +17,26 @@ export type TestimonialItem = {
   order: number;
 };
 
-const EASE = [0.22, 1, 0.36, 1] as const;
 const AUTOPLAY_MS = 6000;
 
 export function Testimonials({ testimonials }: { testimonials: TestimonialItem[] }) {
   const { t } = useLanguage();
+  const reduce = useReducedMotion();
   const [activeVideo, setActiveVideo] = useState<TestimonialItem | null>(null);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const [direction, setDirection] = useState(1);
   const count = testimonials.length;
+
+  // Refs for GSAP scroll-reveals (header + rating badge)
+  const headerRef = useRef<HTMLDivElement>(null);
+  const ratingRef = useRef<HTMLDivElement>(null);
+  // Ref for the slide content — GSAP timeline animates internal elements on slide change
+  const slideRef = useRef<HTMLDivElement>(null);
+
+  // Scroll-reveal hooks (only fire once when section scrolls into view)
+  useGsapReveal(headerRef, { delay: 0, y: 28 });
+  useGsapReveal(ratingRef, { delay: 0.15, y: 28 });
 
   const paginate = useCallback(
     (dir: number) => {
@@ -49,6 +60,45 @@ export function Testimonials({ testimonials }: { testimonials: TestimonialItem[]
     const id = setTimeout(() => paginate(1), AUTOPLAY_MS);
     return () => clearTimeout(id);
   }, [index, paused, count, paginate]);
+
+  // GSAP timeline — drives the slide transition (x:100→0, opacity:0→1) PLUS
+  // the internal content reveal (quote icon scale, star stagger, author slide-up).
+  // Re-fires on every slide change. Respects prefers-reduced-motion.
+  useEffect(() => {
+    if (!slideRef.current || reduce) return;
+    const el = slideRef.current;
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+      // Slide transition: x:100 → 0, opacity:0 → 1
+      tl.fromTo(
+        el,
+        { x: 100, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.6 }
+      );
+      // Quote icon — scale in from 0
+      tl.fromTo(
+        ".slide-quote-icon",
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.45 },
+        "-=0.25"
+      );
+      // Stars — stagger pop-in one by one
+      tl.fromTo(
+        ".slide-star",
+        { scale: 0, opacity: 0, y: 8 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.3, stagger: 0.07 },
+        "-=0.2"
+      );
+      // Author info — slide up from bottom
+      tl.fromTo(
+        ".slide-author",
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.5 },
+        "-=0.15"
+      );
+    }, el);
+    return () => ctx.revert();
+  }, [index, reduce, direction]);
 
   // Keyboard nav
   const onKey = useCallback(
@@ -87,7 +137,7 @@ export function Testimonials({ testimonials }: { testimonials: TestimonialItem[]
       <div className="container-drill relative">
         {/* Header */}
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
-          <Reveal className="max-w-2xl">
+          <div ref={headerRef} className="max-w-2xl">
             <span className="text-[13px] font-semibold uppercase tracking-[0.14em] text-[#D2151E]">
               {t("testimonials.eyebrow")}
             </span>
@@ -102,10 +152,10 @@ export function Testimonials({ testimonials }: { testimonials: TestimonialItem[]
             <p className="mt-6 max-w-xl text-[16px] font-normal leading-[1.6] text-[#333333] md:text-[17px]">
               {t("testimonials.subtitle")}
             </p>
-          </Reveal>
+          </div>
 
           {/* Rating badge */}
-          <Reveal delay={0.15}>
+          <div ref={ratingRef}>
             <div className="flex items-center gap-5 border border-[#DADCE0] bg-white px-6 py-5 shadow-[0_4px_0_0_#121117]">
               <div className="flex flex-col">
                 <span className="text-[44px] font-bold leading-none text-[#121117]">5.0</span>
@@ -125,7 +175,7 @@ export function Testimonials({ testimonials }: { testimonials: TestimonialItem[]
                 </span>
               </div>
             </div>
-          </Reveal>
+          </div>
         </div>
 
         {/* Carousel */}
@@ -140,16 +190,18 @@ export function Testimonials({ testimonials }: { testimonials: TestimonialItem[]
             aria-roledescription="carousel"
             aria-label="Testimonials carousel"
           >
-            {/* Slide viewport */}
+            {/* Slide viewport — keyed by index so the inner content remounts on slide change.
+                GSAP timeline (above) animates x:100→0, opacity:0→1 plus internal elements. */}
             <div className="relative overflow-hidden">
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
                   key={testimonials[index].id}
+                  ref={slideRef}
                   custom={direction}
-                  initial={{ opacity: 0, x: direction * 80 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: direction * -80 }}
-                  transition={{ duration: 0.6, ease: EASE }}
+                  initial={reduce ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={reduce ? { opacity: 0 } : { opacity: 0, x: direction * -80 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
                   aria-roledescription="slide"
                   aria-label={`Slide ${index + 1} of ${count}`}
                 >
@@ -175,7 +227,7 @@ export function Testimonials({ testimonials }: { testimonials: TestimonialItem[]
                       aria-selected={i === index}
                       aria-label={`Go to testimonial ${i + 1}`}
                       onClick={() => goTo(i)}
-                      className="group relative h-3 w-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2151E]"
+                      className="no-tap-highlight group relative h-3 w-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2151E]"
                     >
                       <span
                         className={`block h-3 w-3 transition-all duration-300 ${
@@ -194,13 +246,13 @@ export function Testimonials({ testimonials }: { testimonials: TestimonialItem[]
                 </div>
               </div>
 
-              {/* Arrows */}
+              {/* Arrows — 48x48 touch targets */}
               <div className="flex items-center gap-3">
                 <button
                   type="button"
                   onClick={() => paginate(-1)}
                   aria-label="Previous testimonial"
-                  className="flex h-12 w-12 items-center justify-center bg-[#121117] text-white transition-colors hover:bg-[#D2151E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2151E] disabled:cursor-not-allowed disabled:opacity-30"
+                  className="no-tap-highlight flex h-12 w-12 items-center justify-center bg-[#121117] text-white transition-colors hover:bg-[#D2151E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2151E] disabled:cursor-not-allowed disabled:opacity-30"
                   disabled={count <= 1}
                 >
                   <ChevronLeft className="h-5 w-5" />
@@ -209,7 +261,7 @@ export function Testimonials({ testimonials }: { testimonials: TestimonialItem[]
                   type="button"
                   onClick={() => paginate(1)}
                   aria-label="Next testimonial"
-                  className="flex h-12 w-12 items-center justify-center bg-[#121117] text-white transition-colors hover:bg-[#D2151E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2151E] disabled:cursor-not-allowed disabled:opacity-30"
+                  className="no-tap-highlight flex h-12 w-12 items-center justify-center bg-[#121117] text-white transition-colors hover:bg-[#D2151E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D2151E] disabled:cursor-not-allowed disabled:opacity-30"
                   disabled={count <= 1}
                 >
                   <ChevronRight className="h-5 w-5" />
@@ -289,16 +341,17 @@ function CarouselSlide({
 
         {/* Quote side */}
         <div className="flex flex-col justify-center p-8 md:p-12 lg:p-14">
-          <Quote className="h-12 w-12 text-[#D2151E]" />
+          {/* .slide-quote-icon / .slide-star / .slide-author are GSAP timeline targets */}
+          <Quote className="slide-quote-icon h-12 w-12 text-[#D2151E]" />
           <div className="mt-4 flex gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} className="h-5 w-5 fill-[#D2151E] text-[#D2151E]" />
+              <Star key={i} className="slide-star h-5 w-5 fill-[#D2151E] text-[#D2151E]" />
             ))}
           </div>
           <blockquote className="mt-5 text-[20px] font-normal leading-[1.55] text-[#121117] md:text-[26px]">
             &ldquo;{testimonial.quote}&rdquo;
           </blockquote>
-          <div className="mt-8 flex items-center gap-4 border-t border-[#E5E7EB] pt-6">
+          <div className="slide-author mt-8 flex items-center gap-4 border-t border-[#E5E7EB] pt-6">
             <div className="flex h-12 w-12 items-center justify-center bg-[#121117] text-[15px] font-bold text-white">
               {initials}
             </div>
@@ -318,17 +371,17 @@ function CarouselSlide({
       <Quote className="pointer-events-none absolute -right-4 -top-8 h-40 w-40 text-[#D2151E]/[0.06] md:h-56 md:w-56" aria-hidden />
       <div className="relative">
         <div className="flex items-start justify-between gap-6">
-          <Quote className="h-12 w-12 flex-shrink-0 text-[#D2151E]" />
+          <Quote className="slide-quote-icon h-12 w-12 flex-shrink-0 text-[#D2151E]" />
           <div className="flex gap-0.5">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Star key={i} className="h-5 w-5 fill-[#D2151E] text-[#D2151E]" />
+              <Star key={i} className="slide-star h-5 w-5 fill-[#D2151E] text-[#D2151E]" />
             ))}
           </div>
         </div>
         <blockquote className="mt-6 max-w-4xl text-[24px] font-normal leading-[1.45] text-[#121117] md:text-[34px] md:leading-[1.4]">
           &ldquo;{testimonial.quote}&rdquo;
         </blockquote>
-        <div className="mt-10 flex items-center gap-4 border-t border-[#E5E7EB] pt-6">
+        <div className="slide-author mt-10 flex items-center gap-4 border-t border-[#E5E7EB] pt-6">
           <div className="flex h-14 w-14 items-center justify-center bg-[#121117] text-[18px] font-bold text-white">
             {initials}
           </div>
@@ -392,7 +445,7 @@ function VideoModal({
             initial={{ scale: 0.92, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.96, opacity: 0 }}
-            transition={{ duration: 0.4, ease: EASE }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="relative w-full max-w-3xl bg-[#121117]"
             onClick={(e) => e.stopPropagation()}
           >

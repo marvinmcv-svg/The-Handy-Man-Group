@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Instagram, ArrowUpRight, Heart, MessageCircle } from "lucide-react";
-import { Reveal } from "@/components/site/motion-primitives";
+import { useGsapReveal, useGsapStagger } from "@/components/site/gsap-utils";
 import { SITE } from "@/lib/site-data";
 import { useLanguage } from "@/components/site/language-provider";
 
@@ -27,29 +27,39 @@ export function InstagramFeed() {
   const { t } = useLanguage();
   const [hovered, setHovered] = useState<number | null>(null);
   const [loadedIframes, setLoadedIframes] = useState<Set<number>>(new Set());
-  const containerRef = useRef<HTMLDivElement>(null);
+
+  const headerRef = useRef<HTMLDivElement>(null);
+  const followRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // Header + follow CTA scroll-reveals
+  useGsapReveal(headerRef, { delay: 0, y: 28 });
+  useGsapReveal(followRef, { delay: 0.15, y: 28 });
+
+  // Grid items reveal in a wave pattern (staggered across columns AND rows)
+  useGsapStagger(gridRef, ".ig-tile", { stagger: 0.06, y: 24 });
 
   function markLoaded(idx: number) {
     setLoadedIframes((prev) => new Set(prev).add(idx));
   }
 
   return (
-    <section id="instagram" className="bg-[#F3F4F6] py-16 md:py-24">
+    <section id="instagram" className="overflow-x-hidden bg-[#F3F4F6] py-16 md:py-24">
       <div className="container-drill">
         {/* Header */}
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-          <Reveal className="max-w-2xl">
+          <div ref={headerRef} className="max-w-2xl">
             <span className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#D2151E]">
               {SITE.instagramHandle}
             </span>
-            <h2 className="mt-3 text-[36px] font-bold leading-[1.02] tracking-tight text-[#121117] md:text-[52px]">
+            <h2 className="mt-3 text-[32px] font-bold leading-[1.02] tracking-tight text-[#121117] sm:text-[36px] md:text-[52px]">
               {t("ig.title")}
             </h2>
-            <p className="mt-4 text-[16px] font-normal leading-[1.6] text-[#333333] md:text-[17px]">
+            <p className="mt-4 text-[15px] font-normal leading-[1.6] text-[#333333] sm:text-[16px] md:text-[17px]">
               {t("ig.subtitle")}
             </p>
-          </Reveal>
-          <Reveal delay={0.15}>
+          </div>
+          <div ref={followRef}>
             <motion.a
               href={SITE.instagram}
               target="_blank"
@@ -57,17 +67,17 @@ export function InstagramFeed() {
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              className="inline-flex h-12 items-center gap-2 bg-[#D2151E] px-6 text-[14px] font-semibold text-white transition-colors hover:bg-[#B01118]"
+              className="no-tap-highlight inline-flex min-h-[44px] items-center gap-2 bg-[#D2151E] px-6 py-3 text-[14px] font-semibold text-white transition-colors hover:bg-[#B01118]"
             >
               <Instagram className="h-4 w-4" />
               {t("ig.follow")} {SITE.instagramHandle}
             </motion.a>
-          </Reveal>
+          </div>
         </div>
 
-        {/* Clean uniform square grid */}
+        {/* Clean uniform square grid — .ig-tile items wave-staggered by useGsapStagger above */}
         <div
-          ref={containerRef}
+          ref={gridRef}
           className="mt-12 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 md:grid-cols-4 lg:gap-4"
         >
           {IG_POSTS.map((post, idx) => {
@@ -80,17 +90,9 @@ export function InstagramFeed() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`View Instagram post: ${post.caption}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: "-20px" }}
-                transition={{
-                  duration: 0.4,
-                  delay: (idx % 4) * 0.06,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
                 onHoverStart={() => setHovered(idx)}
                 onHoverEnd={() => setHovered(null)}
-                className="group relative block aspect-square overflow-hidden bg-[#121117]"
+                className="ig-tile no-tap-highlight group relative block aspect-square overflow-hidden bg-[#121117]"
               >
                 {/* Instagram embed iframe — cropped to show only the media (square portion) */}
                 <iframe
@@ -142,7 +144,7 @@ export function InstagramFeed() {
                     scale: isHovered ? 1 : 0.5,
                   }}
                   transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute right-2 bottom-2 z-10 flex h-8 w-8 items-center justify-center bg-[#D2151E] sm:h-10 sm:w-10"
+                  className="absolute bottom-2 right-2 z-10 flex h-8 w-8 items-center justify-center bg-[#D2151E] sm:h-10 sm:w-10"
                 >
                   <ArrowUpRight className="h-4 w-4 text-white sm:h-5 sm:w-5" />
                 </motion.div>
@@ -152,11 +154,11 @@ export function InstagramFeed() {
         </div>
 
         {/* Bottom note */}
-        <Reveal delay={0.2} className="mt-8 text-center">
-          <p className="text-[14px] font-normal text-[#999999]">
+        <div className="mt-8 text-center">
+          <p className="text-[13px] font-normal text-[#999999] sm:text-[14px]">
             122 posts · 1.3K followers · {SITE.instagramBio}
           </p>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

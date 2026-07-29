@@ -52,74 +52,74 @@ export function ContactForm() {
   }
 
   return (
-    <section id="contact" className="bg-white py-16 md:py-24">
-      <div className="container-drill grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-16">
+    <section id="contact" className="overflow-x-hidden bg-white py-16 md:py-24">
+      <div className="container-drill grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
         {/* Left: info */}
-        <Reveal className="lg:col-span-5">
+        <Reveal className="min-w-0 lg:col-span-5">
           <span className="text-[13px] font-semibold uppercase tracking-[0.12em] text-[#D2151E]">
             Contact us
           </span>
-          <h2 className="mt-3 text-[36px] font-bold leading-[1.05] tracking-tight text-[#121117] md:text-[48px]">
+          <h2 className="mt-3 text-[32px] font-bold leading-[1.05] tracking-tight text-[#121117] sm:text-[36px] md:text-[48px]">
             Let's Connect
           </h2>
-          <p className="mt-5 text-[17px] font-normal leading-[1.6] text-[#333333]">
+          <p className="mt-5 text-[16px] font-normal leading-[1.6] text-[#333333] sm:text-[17px]">
             Send us a message, and Joe or Claudia will get back to you
             promptly. We're here to answer your questions and help bring your
             vision to life.
           </p>
 
           <div className="mt-9 space-y-5 border-t border-[#DDDDDD] pt-8">
-            <a href={SITE.emailHref} className="group flex items-start gap-4">
+            <a href={SITE.emailHref} className="no-tap-highlight group flex min-h-[44px] items-start gap-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#F3F4F6] text-[#D2151E] transition-colors group-hover:bg-[#D2151E] group-hover:text-white">
                 <Mail className="h-5 w-5" />
               </span>
-              <span>
+              <span className="min-w-0">
                 <span className="block text-[12px] font-semibold uppercase tracking-wide text-[#999999]">Send us an email</span>
-                <span className="text-[17px] font-bold text-[#121117]">{SITE.email}</span>
+                <span className="break-all text-[15px] font-bold text-[#121117] sm:text-[17px]">{SITE.email}</span>
               </span>
             </a>
-            <a href={SITE.phoneHref} className="group flex items-start gap-4">
+            <a href={SITE.phoneHref} className="no-tap-highlight group flex min-h-[44px] items-start gap-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#F3F4F6] text-[#D2151E] transition-colors group-hover:bg-[#D2151E] group-hover:text-white">
                 <Phone className="h-5 w-5" />
               </span>
-              <span>
+              <span className="min-w-0">
                 <span className="block text-[12px] font-semibold uppercase tracking-wide text-[#999999]">Give us a call</span>
-                <span className="text-[17px] font-bold text-[#121117]">{SITE.phone}</span>
+                <span className="break-all text-[15px] font-bold text-[#121117] sm:text-[17px]">{SITE.phone}</span>
               </span>
             </a>
-            <div className="flex items-start gap-4">
+            <div className="flex min-h-[44px] items-start gap-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#F3F4F6] text-[#D2151E]">
                 <MapPin className="h-5 w-5" />
               </span>
-              <span>
+              <span className="min-w-0">
                 <span className="block text-[12px] font-semibold uppercase tracking-wide text-[#999999]">Where we work</span>
-                <span className="text-[16px] font-semibold text-[#121117]">{SITE.serviceArea}</span>
+                <span className="break-words text-[15px] font-semibold text-[#121117] sm:text-[16px]">{SITE.serviceArea}</span>
               </span>
             </div>
-            <div className="flex items-start gap-4">
+            <div className="flex min-h-[44px] items-start gap-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#F3F4F6] text-[#D2151E]">
                 <Clock className="h-5 w-5" />
               </span>
-              <span>
+              <span className="min-w-0">
                 <span className="block text-[12px] font-semibold uppercase tracking-wide text-[#999999]">Hours</span>
-                <span className="text-[16px] font-semibold text-[#121117]">{SITE.hours}</span>
+                <span className="break-words text-[15px] font-semibold text-[#121117] sm:text-[16px]">{SITE.hours}</span>
               </span>
             </div>
-            <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-4">
+            <a href={SITE.instagram} target="_blank" rel="noopener noreferrer" className="no-tap-highlight group flex min-h-[44px] items-start gap-4">
               <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-[#F3F4F6] text-[#D2151E] transition-colors group-hover:bg-[#D2151E] group-hover:text-white">
                 <Instagram className="h-5 w-5" />
               </span>
-              <span>
+              <span className="min-w-0">
                 <span className="block text-[12px] font-semibold uppercase tracking-wide text-[#999999]">Follow our work</span>
-                <span className="text-[16px] font-bold text-[#121117]">{SITE.instagramHandle}</span>
+                <span className="break-words text-[15px] font-bold text-[#121117] sm:text-[16px]">{SITE.instagramHandle}</span>
               </span>
             </a>
           </div>
         </Reveal>
 
         {/* Right: form */}
-        <Reveal delay={0.15} className="lg:col-span-7">
-          <div className="bg-[#F3F4F6] p-6 md:p-10">
+        <Reveal delay={0.15} className="min-w-0 lg:col-span-7">
+          <div className="bg-[#F3F4F6] p-5 sm:p-6 md:p-10">
             {status === "success" ? (
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -135,18 +135,19 @@ export function ContactForm() {
                 >
                   <Check className="h-8 w-8" strokeWidth={3} />
                 </motion.div>
-                <h3 className="mt-6 text-[26px] font-bold text-[#121117]">Quote request received</h3>
-                <p className="mt-3 max-w-md text-[16px] font-normal leading-relaxed text-[#333333]">{message}</p>
+                <h3 className="mt-6 text-[22px] font-bold text-[#121117] sm:text-[26px]">Quote request received</h3>
+                <p className="mt-3 max-w-md text-[15px] font-normal leading-relaxed text-[#333333] sm:text-[16px]">{message}</p>
                 <button
                   type="button"
                   onClick={() => { setStatus("idle"); setMessage(""); }}
-                  className="mt-7 inline-flex h-11 items-center border border-[#121117] px-6 text-[14px] font-semibold text-[#121117] transition-colors hover:bg-[#121117] hover:text-white"
+                  className="no-tap-highlight mt-7 inline-flex min-h-[44px] items-center border border-[#121117] px-6 py-3 text-[14px] font-semibold text-[#121117] transition-colors hover:bg-[#121117] hover:text-white"
                 >
                   Send another request
                 </button>
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                {/* Inputs are full-width on mobile (single column), 2-up on sm+ */}
                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                   <Field label="Your name" htmlFor="name" required>
                     <input id="name" name="name" type="text" required autoComplete="name" placeholder="Jane Smith" className="drill-input" />
@@ -187,7 +188,8 @@ export function ContactForm() {
                   </motion.div>
                 )}
 
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                {/* Submit row: stacks to full-width on mobile, two-column on sm+ */}
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                   <p className="text-[13px] font-normal text-[#999999]">
                     We'll never share your details. No spam, ever.
                   </p>
@@ -197,7 +199,7 @@ export function ContactForm() {
                     whileHover={{ scale: status === "loading" ? 1 : 1.03 }}
                     whileTap={{ scale: status === "loading" ? 1 : 0.97 }}
                     transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                    className="inline-flex h-12 items-center justify-center gap-2 bg-[#D2151E] px-8 text-[15px] font-semibold text-white transition-colors hover:bg-[#B01118] disabled:cursor-not-allowed disabled:bg-[#CCCCCC]"
+                    className="no-tap-highlight inline-flex min-h-[44px] w-full items-center justify-center gap-2 bg-[#D2151E] px-8 py-3 text-[15px] font-semibold text-white transition-colors hover:bg-[#B01118] disabled:cursor-not-allowed disabled:bg-[#CCCCCC] sm:w-auto"
                   >
                     {status === "loading" ? (
                       <>
@@ -222,16 +224,28 @@ export function ContactForm() {
           background: #ffffff;
           border: 1px solid rgba(0, 0, 0, 0.1);
           padding: 0 15px;
-          font-size: 14px;
+          /* 16px font prevents iOS auto-zoom on focus */
+          font-size: 16px;
           font-family: var(--font-public-sans), sans-serif;
           color: #333333;
           outline: none;
           transition: border-color 0.15s ease;
+          /* Prevent iOS inner shadow on inputs */
+          -webkit-appearance: none;
+          appearance: none;
+          /* Cap max-width to avoid the form ever causing horizontal scroll */
+          max-width: 100%;
         }
         :global(.drill-input::placeholder) { color: #999999; }
         :global(.drill-input:focus) { border-color: #121117; }
         :global(textarea.drill-input) { height: auto; padding: 14px 15px; line-height: 21px; min-height: 140px; }
         :global(select.drill-input) { cursor: pointer; }
+        /* Larger min-height on touch devices for easier tapping */
+        @media (max-width: 640px) {
+          :global(.drill-input) {
+            height: 56px;
+          }
+        }
       `}</style>
     </section>
   );

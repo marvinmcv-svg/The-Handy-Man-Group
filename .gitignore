@@ -57,3 +57,5 @@ server.log
 db/*.db
 db/*.db-journal
 
+test-results/
+.playwright-artifacts
